@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>people-show-data</title>
+    <link href="http://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="../../css/style.css">
+    
+     <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+	  <script src="//code.jquery.com/jquery-1.9.1.js"></script>
+	  <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+	  <link rel="stylesheet" href="http://jqueryui.com/resources/demos/style.css">
+	  
+	  <script src="../../js/echarts.min.js"></script>
+    <!-- <link rel="stylesheet" type="text/css" href="css/style_dev.css"> -->
+
+
+<style type="text/css">
+  .overview-gap{
+		clear: both;
+		background-color: #ececec;
+		height: 18px;
+	}
+	#select{
+		width:100%;
+		height:30px;
+		position: relative;
+		padding-top: 20px;
+		padding-bottom: 15px;
+		z-index: 2;
+		color: #323437;
+		}
+</style>
+
+<script>
+  $(function() {
+    $( "#from" ).datepicker({
+      dateFormat:"yy-mm-dd",
+      changeMonth: true,
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#to" ).datepicker( "option", "minDate", selectedDate );
+      }
+    });
+    
+    $( "#to" ).datepicker({
+      dateFormat:"yy-mm-dd",
+      changeMonth: true,
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#from" ).datepicker( "option", "maxDate", selectedDate );
+       
+      }
+    });
+  });
+  </script>
+  
+   <script language="javascript">
+    var XMLHttpReq;
+    var select;
+        //创建XMLHttpRequest对象         
+        function createXMLHttpRequest() {  
+            if(window.XMLHttpRequest) { //Mozilla 浏览器  
+                XMLHttpReq = new XMLHttpRequest();  
+            }  
+            else if (window.ActiveXObject) { // IE浏览器  
+                try {  
+                    XMLHttpReq = new ActiveXObject("Msxml2.XMLHTTP");  
+                } catch (e) {  
+                    try {  
+                        XMLHttpReq = new ActiveXObject("Microsoft.XMLHTTP");  
+                    } catch (e) {}  
+                }  
+            }  
+        }  
+        //发送请求函数  
+        function sendRequest() {  
+            createXMLHttpRequest();  
+            var url = "user_like.jsp?start="+document.getElementById('from').value+"&end="+document.getElementById('to').value+"&user="+document.getElementById('user').value; 
+            XMLHttpReq.open("GET", url, true);  
+            XMLHttpReq.onreadystatechange = processResponse;//指定响应函数  
+            XMLHttpReq.send(null);  // 发送请求  
+        }  
+        // 处理返回信息函数  
+        function processResponse() {  
+            if (XMLHttpReq.readyState == 4) { // 判断对象状态  
+                if (XMLHttpReq.status == 200) { // 信息已经成功返回，开始处理信息  
+                    show(); 
+                } else { //页面不正常  
+                    //window.alert("您所请求的页面有异常。");  
+                }  
+            }  
+        }  
+        function show() {  
+        	//取出user_like.jsp里面的值
+            var name = XMLHttpReq.responseXML.getElementsByTagName("web_name"); 
+            var name1 = XMLHttpReq.responseXML.getElementsByTagName("web_values"); 
+          	var name2=name[0].childNodes[0].nodeValue.replace("]","");
+          	name2=name2.replace("[","");
+          	name2=name2.substring(1,name2.length);
+            var web_name=name2.split(",");
+          	
+      		var name3=name1[0].childNodes[0].nodeValue.replace("]","");
+          	name3=name3.replace("[","");
+            var web_value=name3.split(",");
+            
+            var app = XMLHttpReq.responseXML.getElementsByTagName("app_name"); 
+            var app1 = XMLHttpReq.responseXML.getElementsByTagName("app_values"); 
+          	var app2=app[0].childNodes[0].nodeValue.replace("]","");
+          	app2=app2.replace("[","");
+          	app2=app2.substring(1,app2.length);
+            var app_name=app2.split(",");
+          	
+      		var app3=app1[0].childNodes[0].nodeValue.replace("]","");
+          	app3=app3.replace("[","");
+            var app_values=app3.split(",");
+            
+            
+            var device = XMLHttpReq.responseXML.getElementsByTagName("device_name"); 
+            var device1 = XMLHttpReq.responseXML.getElementsByTagName("device_values"); 
+          	var device2=device[0].childNodes[0].nodeValue.replace("]","");
+          	device2=device2.replace("[","");
+          	device2=device2.substring(1,device2.length);
+            var device_name=device2.split(",");
+          	
+      		var device3=device1[0].childNodes[0].nodeValue.replace("]","");
+          	device3=device3.replace("[","");
+            var device_values=device3.split(",");
+            
+            var system = XMLHttpReq.responseXML.getElementsByTagName("system_name"); 
+            var system1 = XMLHttpReq.responseXML.getElementsByTagName("system_values"); 
+          	var system2=system[0].childNodes[0].nodeValue.replace("]","");
+          	system2=system2.replace("[","");
+          	system2=system2.substring(1,system2.length);
+            var system_name=system2.split(",");
+          	
+      		var system3=system1[0].childNodes[0].nodeValue.replace("]","");
+          	system3=system3.replace("[","");
+            var system_values=system3.split(",");
+        // 基于准备好的dom，初始化echarts实例
+	      var myChart = echarts.init(document.getElementById('web'));
+	      var option = {
+				    title : {
+				        text: '用户使用网页 Top 10',
+				        x:'40%',
+				    },
+				    tooltip : {
+				        trigger: 'item',
+				        formatter: "{a} <br/>{b} : {c} ({d}%)"
+				    },
+				    legend: {
+				    	top:60,
+				        orient : 'vertical',
+				        x : 'left',
+				        data:web_name
+				    },
+				    toolbox: {
+				        show : true,
+				        feature : {
+				            mark : {show: true},
+				            dataView : {show: true, readOnly: false},
+				            magicType : {
+				                show: true, 
+				                type: ['pie', 'funnel'],
+				                
+				            },
+				            restore : {show: true},
+				            saveAsImage : {show: true}
+				        }
+				    },
+				    calculable : true,
+				    series : [
+				        {
+				            name:'web统计',
+				            type:'pie',
+				            radius : '50%',
+				            center: ['60%', '40%'],
+				            data:[{value:web_value[0],name:web_name[0]},
+				            	  {value:web_value[1],name:web_name[1]},
+				            	  {value:web_value[2],name:web_name[2]},
+				            	  {value:web_value[3],name:web_name[3]},
+				            	  {value:web_value[4],name:web_name[4]},
+				            	  {value:web_value[5],name:web_name[5]},
+				            	  {value:web_value[6],name:web_name[6]},
+				            	  {value:web_value[7],name:web_name[7]},
+				            	  {value:web_value[8],name:web_name[8]},
+				            	  {value:web_value[9],name:web_name[9]},
+				            ],
+				            itemStyle: {
+				                emphasis: {
+				                    shadowBlur: 10,
+				                    shadowOffsetX: 0,
+				                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+				                }
+				            }
+				        }
+				    ]
+				};
+	       myChart.setOption(option);
+	        
+	        var myChart1 = echarts.init(document.getElementById('app'));
+		
+		        // 指定图表的配置项和数据
+		       var option1 = {
+				    title : {
+				        text: '用户使用app应用  Top 10',
+				        x:'40%',
+				    },
+				    tooltip : {
+				        trigger: 'item',
+				        formatter: "{a} <br/>{b} : {c} ({d}%)"
+				    },
+				    legend: {
+				    	top:60,
+				        orient : 'vertical',
+				        x : 'left',
+				        data:app_name
+				    },
+				   toolbox: {
+				        show : true,
+				        feature : {
+				            mark : {show: true},
+				            dataView : {show: true, readOnly: false},
+				            magicType : {
+				                show: true, 
+				                type: ['pie', 'funnel'],
+				                
+				            },
+				            restore : {show: true},
+				            saveAsImage : {show: true}
+				        }
+				    },
+				    calculable : true,
+				    series : [
+				        {
+				            name:'App统计',
+				            type:'pie',
+				            radius : '50%',
+				            center: ['60%', '40%'],
+				            data:[{value:app_values[0],name:app_name[0]},
+				            	  {value:app_values[1],name:app_name[1]},
+				            	  {value:app_values[2],name:app_name[2]},
+				            	  {value:app_values[3],name:app_name[3]},
+				            	  {value:app_values[4],name:app_name[4]},
+				            	  {value:app_values[5],name:app_name[5]},
+				            	  {value:app_values[6],name:app_name[6]},
+				            	  {value:app_values[7],name:app_name[7]},
+				            	  {value:app_values[8],name:app_name[8]},
+				            	  {value:app_values[9],name:app_name[9]},
+				            ],
+				            itemStyle: {
+				                emphasis: {
+				                    shadowBlur: 10,
+				                    shadowOffsetX: 0,
+				                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+				                }
+				            }
+				        }
+				    ]
+				};
+	        myChart1.setOption(option1);
+	        
+	         var myChart2 = echarts.init(document.getElementById('device'));
+		
+		        // 指定图表的配置项和数据
+		       var option2 = {
+				    title : {
+				        text: '用户使用设备  Top 10',
+				        x:'40%',
+				    },
+				    tooltip : {
+				        trigger: 'item',
+				        formatter: "{a} <br/>{b} : {c} ({d}%)"
+				    },
+				    legend: {
+				    	top:60,
+				        orient : 'vertical',
+				        x : 'left',
+				        data:device_name
+				    },
+				    toolbox: {
+				        show : true,
+				        feature : {
+				            mark : {show: true},
+				            dataView : {show: true, readOnly: false},
+				            magicType : {
+				                show: true, 
+				                type: ['pie', 'funnel'],
+				                
+				            },
+				            restore : {show: true},
+				            saveAsImage : {show: true}
+				        }
+				    },
+				    calculable : true,
+				    series : [
+				        {
+				            name:'device统计',
+				            type:'pie',
+				            radius : '50%',
+				            center: ['60%', '40%'],
+				            data:[{value:device_values[0],name:device_name[0]},
+				            	  {value:device_values[1],name:device_name[1]},
+				            	  {value:device_values[2],name:device_name[2]},
+				            	  {value:device_values[3],name:device_name[3]},
+				            	  {value:device_values[4],name:device_name[4]},
+				            	  {value:device_values[5],name:device_name[5]},
+				            	  {value:device_values[6],name:device_name[6]},
+				            	  {value:device_values[7],name:device_name[7]},
+				            	  {value:device_values[8],name:device_name[8]},
+				            	  {value:device_values[9],name:device_name[9]},
+				            ],
+				            itemStyle: {
+				                emphasis: {
+				                    shadowBlur: 10,
+				                    shadowOffsetX: 0,
+				                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+				                }
+				            }
+				        }
+				    ]
+				};
+	        myChart2.setOption(option2);
+	        
+	        var myChart3 = echarts.init(document.getElementById('system'));
+		
+		        // 指定图表的配置项和数据
+		       var option3 = {
+				    title : {
+				        text: '用户使用的系统',
+				        x:'40%',
+				    },
+				    tooltip : {
+				        trigger: 'item',
+				        formatter: "{a} <br/>{b} : {c} ({d}%)"
+				    },
+				    legend: {
+				    	top:60,
+				        orient : 'vertical',
+				        x : 'left',
+				        data:system_name
+				    },
+				   toolbox: {
+				        show : true,
+				        feature : {
+				            mark : {show: true},
+				            dataView : {show: true, readOnly: false},
+				            magicType : {
+				                show: true, 
+				                type: ['pie', 'funnel'],
+				                
+				            },
+				            restore : {show: true},
+				            saveAsImage : {show: true}
+				        }
+				    },
+				    calculable : true,
+				    series : [
+				        {
+				            name:'系统使用(次数)',
+				            type:'pie',
+				            radius : '50%',
+				            center: ['60%', '40%'],
+				            data:[{value:system_values[0],name:system_name[0]},
+				            	  {value:system_values[1],name:system_name[1]},
+				            	  {value:system_values[2],name:system_name[2]},
+				            	  {value:system_values[3],name:system_name[3]},
+				            ],
+				            itemStyle: {
+				                emphasis: {
+				                    shadowBlur: 10,
+				                    shadowOffsetX: 0,
+				                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+				                }
+				            }
+				        }
+				    ]
+				};
+	        myChart3.setOption(option3);
+	        
+        }  
+  </script>
+</head>
+<body>
+<div class="htmleaf-container">
+<div class="overview-gap"></div>
+        <div id="select">
+         			&nbsp;&nbsp;&nbsp;&nbsp;
+				    &nbsp;&nbsp;&nbsp;&nbsp;
+					<label for="from">开始时间:</label>
+					<input type="text" id="from" name="from">
+					<font color="red" size="2">(必选*)</font>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<label for="to">结束时间:</label>
+					<input type="text" id="to" name="to">
+					<font color="red" size="2">(必选*)</font>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					 &nbsp;&nbsp;&nbsp;&nbsp;
+					<span>用户：</span>
+        			<input type="text" id="user" name="user">
+        			&nbsp;&nbsp;&nbsp;&nbsp;
+				    &nbsp;&nbsp;&nbsp;&nbsp;
+			    	 <input type="submit" name="select" value="查询" onClick="sendRequest()" >
+	    	</div>
+    <div class="demo">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="navbar">
+                        <img class="people" src="../../images/people.png" alt="">
+                        <ul class="menu">
+                            <!--默认9个数据,如需修改数量,需要同时修改css中的旋转度数-->
+                            <li><a href="#" class="">
+                                                         使用设备
+                            <div class="data_one" id="device">
+                                <iframe src="user_device.jsp" width=100% height=100% scrolling="no" frameborder="0"> </iframe>
+                            </div>
+                            </a></li>
+                            <li><a href="#" class="">浏览网站
+                            <div class="data_two" id="web">
+                                 <iframe src="user_web.jsp" width=100% height=100% scrolling="no" frameborder="0"> </iframe>
+                            </div>
+                            </a></li>
+                            <li><a href="#" class="">使用APP
+                            <div class="data_three" id="app">
+                                <iframe src="user_app.jsp" width=100% height=100% scrolling="no" frameborder="0"> </iframe>
+                            </div>
+                            </a></li>
+                            <li><a href="#" class="">设备系统
+                            <div class="data_four" id="system">
+                                <iframe src="user_system.jsp" width=100% height=100% scrolling="no" frameborder="0"> </iframe>
+                            </div>
+                            </a></li>
+                        </ul>
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

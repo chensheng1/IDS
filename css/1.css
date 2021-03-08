@@ -1,0 +1,27 @@
+@CHARSET "UTF-8";
+#logo {
+    float: left;
+    width: 200px;
+    height: 200px;
+   
+}
+#list LI {
+    float: left;
+    background: url(../images/button2.jpg) no-repeat bottom left;
+    padding: 37px 0 0 0;
+    height: 20px;
+    
+}
+#banquan p{
+	float: left;
+	
+	padding: 22px 0 0 0;
+	height: 23px;
+}
+
+
+body{
+	font-size: 12px;
+	font-family: 微软雅黑,Arial;
+	
+}

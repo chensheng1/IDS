@@ -1,0 +1,415 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>main</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+     <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+	  <script src="//code.jquery.com/jquery-1.9.1.js"></script>
+	  <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+	  <link rel="stylesheet" href="http://jqueryui.com/resources/demos/style.css">
+	  
+	  <script src="../../js/echarts.min.js"></script>
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+    
+    <style type="text/css">
+	.overview-gap{
+		clear: both;
+		background-color: #ececec;
+		height: 18px;
+	}
+	#select{
+		width:100%;
+		height:30px;
+		position: relative;
+		padding-top: 20px;
+		padding-bottom: 15px;
+		z-index: 2;
+		color: #323437;
+	}
+	#main_sum{
+		width: 100%;
+		height:450px;
+		display:inline;
+		float:left;
+		border:1px  groove;
+	}
+	#center1{
+		width: 100%;
+		height:450px;
+		display:inline;
+		float:left;
+		border:1px  groove;
+	}
+	#center2{
+		width: 100%;
+		height:450px;
+		display:inline;
+		float:left;
+		border:1px  groove;
+	}
+	#center3{
+		width: 100%;
+		height:450px;
+		display:inline;
+		float:left;
+		border:1px  groove;
+	}
+	</style>
+	
+	
+	<script>
+  $(function() {
+    $( "#from" ).datepicker({
+      dateFormat:"yy-mm-dd",
+      changeMonth: true,
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#to" ).datepicker( "option", "minDate", selectedDate );
+      }
+    });
+    
+    $( "#to" ).datepicker({
+      dateFormat:"yy-mm-dd",
+      changeMonth: true,
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#from" ).datepicker( "option", "maxDate", selectedDate );
+       
+      }
+    });
+  });
+  </script>
+  
+  <script language="javascript">
+    var XMLHttpReq;
+    var select;
+        //创建XMLHttpRequest对象         
+        function createXMLHttpRequest() {  
+            if(window.XMLHttpRequest) { //Mozilla 浏览器  
+                XMLHttpReq = new XMLHttpRequest();  
+            }  
+            else if (window.ActiveXObject) { // IE浏览器  
+                try {  
+                    XMLHttpReq = new ActiveXObject("Msxml2.XMLHTTP");  
+                } catch (e) {  
+                    try {  
+                        XMLHttpReq = new ActiveXObject("Microsoft.XMLHTTP");  
+                    } catch (e) {}  
+                }  
+            }  
+        }  
+        //发送请求函数  
+        function sendRequest() {  
+            createXMLHttpRequest();  
+            var url = "main_select_total_ajax.jsp?time1="+document.getElementById('from').value+"&time2="+document.getElementById('to').value; 
+            //var url = "main_table.jsp";
+            XMLHttpReq.open("GET", url, true);  
+            XMLHttpReq.onreadystatechange = processResponse;//指定响应函数  
+            XMLHttpReq.send(null);  // 发送请求  
+        }  
+        // 处理返回信息函数  
+        function processResponse() {  
+            if (XMLHttpReq.readyState == 4) { // 判断对象状态  
+                if (XMLHttpReq.status == 200) { // 信息已经成功返回，开始处理信息  
+                    show(); 
+                } else { //页面不正常  
+                    //window.alert("您所请求的页面有异常。");  
+                }  
+            }  
+        }  
+        function show() {  
+        	//取得查询的表格
+           // var select1 = XMLHttpReq.responseText;
+            // document.getElementById("center").innerHTML=select1;
+            
+         //取得查询数据的bar和line图
+          var time = XMLHttpReq.responseXML.getElementsByTagName("Mainsum_time"); 
+          	var time2=time[0].childNodes[0].nodeValue.replace("]","");
+          	time2=time2.replace("[","");
+          	time2=time2.substring(1,time2.length);
+            var main_time=time2.split(",");
+            
+          var log = XMLHttpReq.responseXML.getElementsByTagName("Mainsum_log"); 
+          	var log2=log[0].childNodes[0].nodeValue.replace("]","");
+          	log2=log2.replace("[","");
+            var main_log=log2.split(",");
+            
+         var conn = XMLHttpReq.responseXML.getElementsByTagName("Mainsum_conn"); 
+          	var conn2=conn[0].childNodes[0].nodeValue.replace("]","");
+          	conn2=conn2.replace("[","");
+            var main_conn=conn2.split(",");
+          	
+          	var traff = XMLHttpReq.responseXML.getElementsByTagName("Mainsum_traff");
+      		var traff2=traff[0].childNodes[0].nodeValue.replace("]","");
+          	traff2=traff2.replace("[","");
+            var main_traff=traff2.split(",");
+           
+           var day_time = XMLHttpReq.responseXML.getElementsByTagName("time");
+      		var day_time2=day_time[0].childNodes[0].nodeValue.replace("]","");
+          	day_time2=day_time2.replace("[","");
+          	day_time2=day_time2.substring(1,day_time2.length);
+            var main_day=day_time2.split(",");
+            
+           	var out = XMLHttpReq.responseXML.getElementsByTagName("resp_traff");
+      		var out2=out[0].childNodes[0].nodeValue.replace("]","");
+          	out2=out2.replace("[","");
+            var main_out=out2.split(",");
+            
+            var val = XMLHttpReq.responseXML.getElementsByTagName("orig_traff");
+      		var val2=val[0].childNodes[0].nodeValue.replace("]","");
+          	val2=val2.replace("[","");
+            var main_in=val2.split(",");
+            
+            var name = XMLHttpReq.responseXML.getElementsByTagName("conn");
+      		var name2=name[0].childNodes[0].nodeValue.replace("]","");
+          	name2=name2.replace("[","");
+            var conn_day=name2.split(",");
+            
+       var myChart = echarts.init(document.getElementById('main_sum'));
+		var	option = {
+				    title : {
+				        text: '',
+				    },
+				    tooltip : {
+				        trigger: 'axis',
+				    },
+				    legend: {
+				        data:['日志文件(单位：M)','流量大小(单位：M)','连接数量(单位：百条)'],
+				    },
+				    toolbox: {
+				        show : true,
+				        feature : {
+				            mark : {show: true},
+				            dataView : {show: true, readOnly: false},
+				            magicType : {show: true, type: ['line', 'bar']},
+				            restore : {show: true},
+				            saveAsImage : {show: true},
+				        },
+				    },
+				    calculable : true,
+				    grid: {
+				        left: '3%',
+				        right: '4%',
+				        bottom: '3%',
+				        containLabel: true,
+				    },
+				    xAxis : [
+				        {
+				            type : 'category',
+				            data :main_time,
+				           
+				        },
+				    ],
+				    yAxis: {
+				        type: 'value',
+				        boundaryGap: [0, 0.01],
+				    },
+				    series : [
+				         {
+				            name:'日志文件(单位：M)',
+				            type:'bar',
+				            data:main_log,
+				        },
+				        {
+				            name:'流量大小(单位：M)',
+				            type:'bar',
+				            data:main_traff,
+				        	},
+				        {
+				            name:'连接数量(单位：百条)',
+				            type:'bar',
+				            data:main_conn,
+				            }
+				    ]
+				};
+                    
+	        myChart.setOption(option);
+	        
+	      var myChart1 = echarts.init(document.getElementById('center3'));
+	        var option1 = {
+		        		title: {
+				        text: '上行流量图(每小时)'
+				   	 },
+					    tooltip : {
+					        trigger: 'axis',
+					    },
+					    legend: {
+					        data:['上行流量(M)']
+					    },
+					    toolbox: {
+					        show : true,
+					        feature : {
+					            mark : {show: true},
+					            dataView : {show: true, readOnly: false},
+					            magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+					            restore : {show: true},
+					            saveAsImage : {show: true}
+					        }
+					    },
+					    calculable : true,
+					    xAxis : [
+					        {
+					            type : 'category',
+					            boundaryGap : false,
+					            data : main_day
+					        }
+					    ],
+					    yAxis : [
+					        {
+					        	
+					            type : 'value',
+					        }
+					    ],
+					    series : [
+					        {
+					            name:'上行流量(M)',
+					            type:'line',
+					            stack: '总量',
+					            itemStyle: {normal: {areaStyle:{
+					            								type: 'default',
+					            								}
+					            							}},
+					            data: main_in,
+					        },
+					    ]
+					};
+					myChart1.setOption(option1);
+					
+		var myChart2 = echarts.init(document.getElementById('center2'));
+	        var option2 = {
+		        		title: {
+				        text: '下行流量图(每小时)'
+				   	 },
+					    tooltip : {
+					        trigger: 'axis',
+					    },
+					    legend: {
+					        data:['下行流量(M)']
+					    },
+					    toolbox: {
+					        show : true,
+					        feature : {
+					            mark : {show: true},
+					            dataView : {show: true, readOnly: false},
+					            magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+					            restore : {show: true},
+					            saveAsImage : {show: true}
+					        }
+					    },
+					    calculable : true,
+					    xAxis : [
+					        {
+					            type : 'category',
+					            boundaryGap : false,
+					            data : main_day
+					        }
+					    ],
+					    yAxis : [
+					        {
+					        	
+					            type : 'value',
+					        }
+					    ],
+					    series : [
+					        {
+					            name:'下行流量(M)',
+					            type:'line',
+					            stack: '总量',
+					            itemStyle: {normal: {areaStyle:{
+					            								type: 'default',
+					            								color:'#0080FF',
+					            								}
+					            							}},
+					            data: main_out,
+					        },
+					    ]
+					};
+					myChart2.setOption(option2);
+			
+			var myChart3 = echarts.init(document.getElementById('center1'));
+	        var option3= {
+		        		title: {
+				        text: '连接数图(每小时)'
+				   	 },
+					    tooltip : {
+					        trigger: 'axis',
+					    },
+					    legend: {
+					        data:['连接数(百条)']
+					    },
+					    toolbox: {
+					        show : true,
+					        feature : {
+					            mark : {show: true},
+					            dataView : {show: true, readOnly: false},
+					            magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+					            restore : {show: true},
+					            saveAsImage : {show: true}
+					        }
+					    },
+					    calculable : true,
+					    xAxis : [
+					        {
+					            type : 'category',
+					            boundaryGap : false,
+					            data : main_day
+					        }
+					    ],
+					    yAxis : [
+					        {
+					        	
+					            type : 'value',
+					        }
+					    ],
+					    series : [
+					        {
+					            name:'连接数(百条)',
+					            type:'line',
+					            stack: '总量',
+					            itemStyle: {normal: {areaStyle:{
+					            								type: 'default',
+					            								color:'#00E3E3',
+					            								}
+					            							}},
+					            data: conn_day,
+					        },
+					    ]
+					};
+					myChart3.setOption(option3);
+  	}
+  </script>
+  </head>
+    <body>
+    <div class="overview-gap"></div>
+	    <div id="select">
+	     
+					<label for="from">开始时间:</label>
+					<input type="text" id="from" name="from">
+					<font color="red" size="2">(必选*)</font>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<label for="to">结束时间:</label>
+					<input type="text" id="to" name="to">
+					<font color="red" size="2">(必选*)</font>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+				    <input type="submit" name="select" value="查询" onClick="sendRequest()" >
+			
+	    </div>
+	    <div class="overview-gap" ></div>
+    <div id="main_sum"><iframe src="Main_sum2.jsp" width=100% height=100% scrolling="no" frameborder="0"></iframe>
+	    </div>
+	    <div class="overview-gap"></div>
+	    <div id="center3">
+	        <iframe src="main_outgoingtraff.jsp"width=100% height=100% scrolling="no" frameborder="0"></iframe>
+	    </div>
+	    <div class="overview-gap"></div>
+	    <div id="center2">
+	    	<iframe src="main_incomingtraff.jsp"width=100% height=100% scrolling="no" frameborder="0"></iframe>
+	    </div>
+	    <div class="overview-gap"></div>
+        <div id="center1">
+        <iframe src="main_conn.jsp"width=100% height=100% scrolling="no" frameborder="0"></iframe>
+  </body>
+</html>

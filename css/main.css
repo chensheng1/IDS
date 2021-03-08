@@ -1,0 +1,46 @@
+@CHARSET "UTF-8";
+
+body{
+font-family: arial;
+font-size: 12px;
+text-align: center;
+margin: 0;
+}
+.nTab{
+float: left;
+width: 542px;
+margin: 0 auto;
+border-bottom:1px #C7C7CD solid;
+background:#d5d5d5;
+background-position:left;
+background-repeat:repeat-y;
+margin-bottom:2px;
+}
+.nTab .TabTitle{
+clear: both;
+height: 26px;
+overflow: hidden;
+}
+.nTab .TabTitle ul{
+margin:0;
+padding:0;
+}
+.nTab .TabTitle li{
+float: left;
+width: 60px;
+cursor: pointer;
+padding-top: 6px;
+padding-right: 0px;
+padding-left: 0px;
+padding-bottom: 7px;
+list-style-type: none;
+}
+.nTab .TabTitle .active{ background:url(http://www.codefans.net/jscss/demoimg/200905/tab_bg1.gif) left -25px no-repeat;border-left:1px #C7C7CD solid;border-top:1px #C7C7CD solid;border-bottom:1px #fff solid;}
+.nTab .TabTitle .normal{ background:url(/jscss/demoimg/200905/tab_bg1.gif);border-top:1px #C7C7CD solid;border-bottom:1px #C7C7CD solid;}
+.nTab .TabContent{
+width:auto;background:#fff;
+margin: 0px auto;
+padding:10px 0 0 0;
+border-right:1px #C7C7CD solid;border-left:1px #C7C7CD solid;
+}
+.none {display:none;}

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>member_del.html</title>
+	
+   <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    
+    <link rel="stylesheet" href="http://jqueryui.com/resources/demos/style.css">
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+    
+ <style type="text/css">
+	#main{
+		width:100%;
+		height:350px;
+		background-color: #84C1FF;
+		margin-top:-38px;
+		
+	}
+	#space{
+		margin:0px auto;
+		margin-top:30px;
+		margin-left:180px;
+		text-align:center;
+	}
+	input[type="text"]{
+		broder:2px solid #a1a1a1 ;
+		width:200px;
+		dispaly:block;
+		border-radius:5px;
+		border-color:black;
+	}
+	input[type="password"]{
+		broder:2px solid #a1a1a1 ;
+		width:200px;
+		dispaly:block;
+		border-radius:5px;
+		border-color:black;
+	}
+	#distance{
+		margin:0px auto;
+		margin-top:38px;
+	}
+	.dump{
+		width: 60px;
+		height:30px;
+		margin-left:-140px;
+		background-color: #0000CD;
+		color:#fff;
+	}
+	.submit{
+		width: 60px;
+		height:30px;
+		margin-left:80px;
+		background-color:#0000CD;
+		color:#fff;
+	}
+	#table{
+		width:100%;
+		height:750px;
+	}
+</style>
+
+<script language="javascript">
+    var XMLHttpReq;
+        //创建XMLHttpRequest对象         
+        function createXMLHttpRequest() {  
+            if(window.XMLHttpRequest) { //Mozilla 浏览器  
+                XMLHttpReq = new XMLHttpRequest();  
+            }  
+            else if (window.ActiveXObject) { // IE浏览器  
+                try {  
+                    XMLHttpReq = new ActiveXObject("Msxml2.XMLHTTP");  
+                } catch (e) {  
+                    try {  
+                        XMLHttpReq = new ActiveXObject("Microsoft.XMLHTTP");  
+                    } catch (e) {}  
+                }  
+            }  
+        }  
+        //发送请求函数  
+        function sendRequest() {  
+            createXMLHttpRequest();  
+            var url = "member_update.jsp?name="+document.getElementById('user').value+"&name2="+document.getElementById('username').value+"&pwd="+document.getElementById('password').value+"&admin="+document.getElementById('select').value; 
+            //var url = "origin_select.jsp";
+            XMLHttpReq.open("GET", url, true);  
+            XMLHttpReq.onreadystatechange = processResponse;//指定响应函数  
+            XMLHttpReq.send(null);  // 发送请求  
+        }  
+        // 处理返回信息函数  
+        function processResponse() {  
+            if (XMLHttpReq.readyState == 4) { // 判断对象状态  
+                if (XMLHttpReq.status == 200) { // 信息已经成功返回，开始处理信息  
+                    show(); 
+                } else { //页面不正常  
+                    //window.alert("您所请求的页面有异常。");  
+                }  
+            }  
+        }  
+        function show() {  
+        	//取出web_ajax.jsp里面画这段是时间top10的饼状图
+            var name = XMLHttpReq.responseXML.getElementsByTagName("update");  
+          	var name2=name[0].childNodes[0].nodeValue.replace("]","");
+          	name2=name2.replace("[","");
+            del_name=name2.split(",");
+            
+            window.alert(del_name);
+            window.location.reload(); 
+            }
+            
+  </script>
+  
+  
+  <script type="text/javascript">
+		function cl()
+		{
+		document.getElementById('user').value="";
+		document.getElementById('username').value="";
+		document.getElementById('password').value="";
+		}
+</script>
+  </head>
+  
+  <body>
+  <div id="main">
+		   <div id="distance" align='center'  >
+		   <label><b>用&nbsp;&nbsp;户&nbsp;&nbsp;修&nbsp;&nbsp;改</b></label>
+		   </div>
+        <div id="distance" align='center'  >
+    	<label><b>修改的用户名</b></label>
+    	<input type="text" id="user" name="user" value="">
+    	</div>
+  		
+  		<div id="distance" align='center'>
+    	<label><b>用&nbsp;&nbsp;&nbsp;户&nbsp;&nbsp;&nbsp;名</b></label>
+    	<input type="text" id="username" name="username" value="">
+    	</div>
+    	
+    	<div id="distance" align='center'>
+    	<label><b>密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码&nbsp;&nbsp;&nbsp;</b></label>
+    	<input type="password" id="password" name="password" value="">
+    	</div>
+    	
+    	<div id="distance" align='center'>
+    	<label><b>角&nbsp;&nbsp;&nbsp;&nbsp;色&nbsp;&nbsp;</b></label>
+    	 <select  name="select"  id="select" style="width:8%;height:25px;">
+			    		   <option value="0">管理员</option>
+			    		    <option value="1">普通员工</option>
+		 </select>
+    	</div>
+    	<div id="space" align="justify">
+	    	<input class="dump" type="reset" value="&nbsp;&nbsp;清&nbsp;&nbsp除&nbsp;&nbsp;" onClick="cl()">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	    	<input class="submit" type="submit" value="&nbsp;&nbsp;提&nbsp;&nbsp交&nbsp;&nbsp;" onClick="sendRequest()">
+        </div>
+      </div>
+     <div id="table">
+            <iframe src="member_table.jsp" width=100% height=100% scrolling="no" frameborder="0"> </iframe>
+     </div>
+  </body>
+</html>

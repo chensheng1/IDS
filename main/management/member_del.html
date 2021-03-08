@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>member_del.html</title>
+	
+   <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    
+    <link rel="stylesheet" href="http://jqueryui.com/resources/demos/style.css">
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+    
+ <style type="text/css">
+	#main{
+		width:100%;
+		height:50px;
+	}
+	#table{
+		width:100%;
+		height:750px;
+	}
+  </style>
+
+<script language="javascript">
+    var XMLHttpReq;
+        //创建XMLHttpRequest对象         
+        function createXMLHttpRequest() {  
+            if(window.XMLHttpRequest) { //Mozilla 浏览器  
+                XMLHttpReq = new XMLHttpRequest();  
+            }  
+            else if (window.ActiveXObject) { // IE浏览器  
+                try {  
+                    XMLHttpReq = new ActiveXObject("Msxml2.XMLHTTP");  
+                } catch (e) {  
+                    try {  
+                        XMLHttpReq = new ActiveXObject("Microsoft.XMLHTTP");  
+                    } catch (e) {}  
+                }  
+            }  
+        }  
+        //发送请求函数  
+        function sendRequest() {  
+            createXMLHttpRequest();  
+            var url = "member_del.jsp?name="+document.getElementById('user').value; 
+            //var url = "origin_select.jsp";
+            XMLHttpReq.open("GET", url, true);  
+            XMLHttpReq.onreadystatechange = processResponse;//指定响应函数  
+            XMLHttpReq.send(null);  // 发送请求  
+        }  
+        // 处理返回信息函数  
+        function processResponse() {  
+            if (XMLHttpReq.readyState == 4) { // 判断对象状态  
+                if (XMLHttpReq.status == 200) { // 信息已经成功返回，开始处理信息  
+                    show(); 
+                } else { //页面不正常  
+                    //window.alert("您所请求的页面有异常。");  
+                }  
+            }  
+        }  
+        function show() {  
+        	//取出web_ajax.jsp里面画这段是时间top10的饼状图
+            var name = XMLHttpReq.responseXML.getElementsByTagName("del");  
+          	var name2=name[0].childNodes[0].nodeValue.replace("]","");
+          	name2=name2.replace("[","");
+            del_name=name2.split(",");
+            
+            window.alert(del_name);
+            window.location.reload(); 
+            }
+            
+  </script>
+  </head>
+  
+  <body>
+    <div id="main">
+            <span>删除用户：</span>
+        			<input type="text" id="user" name="user" style="width:20%;height:30px;">
+					&nbsp;&nbsp;&nbsp;&nbsp;
+				   <input type="submit" name="select" value="删除" onClick="sendRequest()" >
+     </div>
+     <div id="table">
+             <iframe src="member_table.jsp" width=100% height=100% scrolling="no" frameborder="0"> </iframe>
+     </div>
+  </body>
+</html>

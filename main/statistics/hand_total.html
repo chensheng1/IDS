@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>hand_total.html</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+	  <script src="//code.jquery.com/jquery-1.9.1.js"></script>
+	  <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+	  <link rel="stylesheet" href="http://jqueryui.com/resources/demos/style.css">
+	  
+	  <script src="../../js/echarts.min.js"></script>
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+
+
+  <style type="text/css">
+    #hand_nohand{
+		width:100%;
+		height:480px;
+	}
+	#pie{
+		width: 49%;
+		height:450px;
+		display:inline;
+		float:left;
+		top:30px;
+		left:10px;
+		border:1px  groove;
+	}
+	#pie2{
+		width: 49%;
+		height:450px;
+		display:inline;
+		float:left;
+		top:30px;
+		left:10px;
+		border:1px  groove;
+	}
+	.overview-gap{
+		clear: both;
+		background-color: #ececec;
+		height: 18px;
+	}
+	#bar{
+		width: 100%;
+		height:450px;
+		border:1px  groove;
+		
+	}
+	#bar2{
+		width: 100%;
+		height:450px;
+		border:1px  groove;
+		
+	}
+	/* #tree{
+		width: 100%;
+		height:800px;
+	} */
+	#select{
+		width:100%;
+		height:30px;
+		position: relative;
+		padding-top: 20px;
+		padding-bottom: 15px;
+		z-index: 2;
+		color: #323437;
+	}
+	</style>
+	
+	<script>
+  $(function() {
+    $( "#from" ).datepicker({
+      dateFormat:"yy-mm-dd",
+      changeMonth: true,
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#to" ).datepicker( "option", "minDate", selectedDate );
+      }
+    });
+    
+    $( "#to" ).datepicker({
+      dateFormat:"yy-mm-dd",
+      changeMonth: true,
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#from" ).datepicker( "option", "maxDate", selectedDate );
+       
+      }
+    });
+  });
+  </script>
+  
+   <script language="javascript">
+    var XMLHttpReq;
+        //创建XMLHttpRequest对象         
+        function createXMLHttpRequest() {  
+            if(window.XMLHttpRequest) { //Mozilla 浏览器  
+                XMLHttpReq = new XMLHttpRequest();  
+            }  
+            else if (window.ActiveXObject) { // IE浏览器  
+                try {  
+                    XMLHttpReq = new ActiveXObject("Msxml2.XMLHTTP");  
+                } catch (e) {  
+                    try {  
+                        XMLHttpReq = new ActiveXObject("Microsoft.XMLHTTP");  
+                    } catch (e) {}  
+                }  
+            }  
+        }  
+        //发送请求函数  
+        function sendRequest() {  
+            createXMLHttpRequest();  
+            var url = "device_select_hand_ajax.jsp?start="+document.getElementById('from').value+"&end="+document.getElementById('to').value; 
+            //var url = "origin_select.jsp";
+            XMLHttpReq.open("GET", url, true);  
+            XMLHttpReq.onreadystatechange = processResponse;//指定响应函数  
+            XMLHttpReq.send(null);  // 发送请求  
+        }  
+        // 处理返回信息函数  
+        function processResponse() {  
+            if (XMLHttpReq.readyState == 4) { // 判断对象状态  
+                if (XMLHttpReq.status == 200) { // 信息已经成功返回，开始处理信息  
+                    show(); 
+                } else { //页面不正常  
+                    //window.alert("您所请求的页面有异常。");  
+                }  
+            }  
+        }  
+        function show() {  
+        	var time = XMLHttpReq.responseXML.getElementsByTagName("device_time");  
+            var time2=time[0].childNodes[0].nodeValue.replace("]","");
+          		time2=time2.replace("[","");
+          		time2=time2.substring(1,time2.length);
+          	var device_date=time2.split(",");
+        	//取得手持设备
+           var hand = XMLHttpReq.responseXML.getElementsByTagName("device_hand");  
+            var hand2=hand[0].childNodes[0].nodeValue.replace("]","");
+          		hand2=hand2.replace("[","");
+          	var device_hand=hand2.split(",");
+        	//取得非手持设备
+            var device = XMLHttpReq.responseXML.getElementsByTagName("device_nohand");  
+            var device2=device[0].childNodes[0].nodeValue.replace("]","");
+          		device2=device2.replace("[","");
+          	var device_no=device2.split(",");
+       
+       
+            var hand_time = XMLHttpReq.responseXML.getElementsByTagName("duration_hand");  
+            var hand_time2=hand_time[0].childNodes[0].nodeValue.replace("]","");
+          		hand_time2=hand_time2.replace("[","");
+          	var device_hand_time=hand_time2.split(",");
+        
+            var device_time = XMLHttpReq.responseXML.getElementsByTagName("duration_nohand");  
+            var device_time2=device_time[0].childNodes[0].nodeValue.replace("]","");
+          		device_time2=device_time2.replace("[","");
+          	var device_no_time=device_time2.split(",");
+              // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('bar'));
+
+        // 指定图表的配置项和数据
+		  var option = {
+			    tooltip : {
+			    title: {
+				        text: '手持与非手持统计(按设备数)'
+				   	 },
+			        trigger: 'axis',
+			        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+			            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+			        }
+			    },
+			    legend: {
+			        data:['手持终端(单位：台数)','非手持终端(单位：台数)']
+			    },
+			    grid: {
+			        left: '3%',
+			        right: '4%',
+			        bottom: '3%',
+			        containLabel: true
+			    },
+			    xAxis : [
+			        {
+			            type : 'category',
+			            data : device_date
+			        }
+			    ],
+			    yAxis : [
+			        {
+			            type : 'value'
+			        }
+			    ],
+			    series : [
+			        {
+			            name:'手持终端(单位：台数)',
+			            type:'bar',
+			            data:device_hand
+			        },
+			        {
+			        	name:'非手持终端(单位：台数)',
+			        	type:'bar',
+			            data:device_no
+			        },
+			       
+			       
+			       
+			    ]
+			};
+			
+			        // 使用刚指定的配置项和数据显示图表。
+			        myChart.setOption(option);
+			        
+		 var myChart2 = echarts.init(document.getElementById('bar2'));
+
+        // 指定图表的配置项和数据
+				        var option2 = {
+				        title: {
+				        text: '手持与非手持统计(按设备使用时长)'
+				   	 },
+			    tooltip : {
+			        trigger: 'axis',
+			        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+			            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+			        }
+			    },
+			    legend: {
+			        data:['手持终端(单位：s)','非手持终端(单位：s)']
+			    },
+			    grid: {
+			        left: '3%',
+			        right: '4%',
+			        bottom: '3%',
+			        containLabel: true
+			    },
+			    xAxis : [
+			        {
+			            type : 'category',
+			            data : device_date
+			        }
+			    ],
+			    yAxis : [
+			        {
+			            type : 'value'
+			        }
+			    ],
+			    series : [
+			        {
+			            name:'手持终端(单位：s)',
+			            type:'bar',
+			            data:device_hand_time
+			        },
+			        {
+			        	name:'非手持终端(单位：s)',
+			        	type:'bar',
+			            data:device_no_time
+			        },
+			       
+			       
+			       
+			    ]
+			};
+			
+			        // 使用刚指定的配置项和数据显示图表。
+			        myChart2.setOption(option2);
+          	}
+     </script>
+  </head>
+  
+  <body>
+  <div id="hand_nohand">
+   	<div id="pie">
+   		<iframe src="device_hand.jsp"width=100% height=100% scrolling="no" frameborder="0"></iframe>
+   	</div>
+   	<div id="pie2">
+   		<iframe src="device_hand2.jsp"width=100% height=100% scrolling="no" frameborder="0"></iframe>
+   	</div>
+  </div>
+   	  <div class="overview-gap"></div>
+   	  <div id="select">
+	     
+					<label for="from">开始时间:</label>
+					<input type="text" id="from" name="from">
+					<font color="red" size="2">(必选*)</font>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<label for="to">结束时间:</label>
+					<input type="text" id="to" name="to">
+					<font color="red" size="2">(必选*)</font>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+				    <input type="submit" name="select" value="查询" onClick="sendRequest()" >
+			
+	    </div>
+	    <div class="overview-gap"></div>
+	    <div id="bar">
+	    	<iframe src="device_hand_bar.jsp"width=100% height=100% scrolling="no" frameborder="0"></iframe>
+	    </div>
+	    <div id="bar2">
+	    	<iframe src="device_hand_bar2.jsp"width=100% height=100% scrolling="no" frameborder="0"></iframe>
+	    </div>
+	 <!--    <div id="tree">
+			<br><br><br>
+			  <b>决策树部分叶子节点：</b>
+			  <br><br><br>
+			   <div style="width: 100%;height:200px">
+			  <img src="..\..\images\tree.png" style="width:800px;height:700px">
+			  <img src="..\..\images\tree1.png" style="width:800px;height:700px">	    
+	    </div> -->
+  </body>
+</html>

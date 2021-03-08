@@ -1,0 +1,164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>main</title>
+    
+        <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+     <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+	  <script src="//code.jquery.com/jquery-1.9.1.js"></script>
+	  <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+	  <link rel="stylesheet" href="http://jqueryui.com/resources/demos/style.css">
+	  
+	  <script src="../../js/echarts.min.js"></script>
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+    <style type="text/css">
+	#all{
+		width:100%;
+		height:1130px;
+	}
+	#select{
+		width:100%;
+		height:30px;
+		position: relative;
+		padding-top: 20px;
+		padding-bottom: 15px;
+		z-index: 2;
+		color: #323437;
+	}
+	#main{
+		width: 100%;
+		height:800px;
+		display:inline;
+		float:left;
+		border:1px  groove;
+	}
+	</style>
+	
+ <script language="javascript">
+    var XMLHttpReq;  
+        //创建XMLHttpRequest对象         
+        function createXMLHttpRequest() {  
+            if(window.XMLHttpRequest) { //Mozilla 浏览器  
+                XMLHttpReq = new XMLHttpRequest();  
+            }  
+            else if (window.ActiveXObject) { // IE浏览器  
+                try {  
+                    XMLHttpReq = new ActiveXObject("Msxml2.XMLHTTP");  
+                } catch (e) {  
+                    try {  
+                        XMLHttpReq = new ActiveXObject("Microsoft.XMLHTTP");  
+                    } catch (e) {}  
+                }  
+            }  
+        }  
+        //发送请求函数  
+        function sendRequest() {  
+            createXMLHttpRequest();
+            if(document.getElementById('user').value == ""){
+            var url = "MAC_number_ajax.jsp?ip="+document.getElementById('ip').value; 
+            }else{
+            var url = "luyou_select_ajax.jsp?user="+document.getElementById('user').value;
+            }
+            XMLHttpReq.open("GET", url, true);  
+            XMLHttpReq.onreadystatechange = processResponse;//指定响应函数  
+            XMLHttpReq.send(null);  // 发送请求  
+        }  
+        // 处理返回信息函数  
+        function processResponse() {  
+            if (XMLHttpReq.readyState == 4) { // 判断对象状态  
+                if (XMLHttpReq.status == 200) { // 信息已经成功返回，开始处理信息  
+                    DisplayHot();  
+                } else { //页面不正常  
+                    //window.alert("您所请求的页面有异常。");  
+                }  
+            }  
+        }  
+        function DisplayHot() {  
+            //读取Main_ajax.jsp里面的连接数的值
+         if(document.getElementById('user').value == ""){
+            var conn1 = XMLHttpReq.responseXML.getElementsByTagName("MAC");  
+            var conn2=conn1[0].childNodes[0].nodeValue.replace("]","");
+          		conn2=conn2.replace("[","");
+          	var conn3=conn2.split(",");
+          	//读取Main_ajax.jsp里面流量的大小
+          	var traff1 = XMLHttpReq.responseXML.getElementsByTagName("number");  
+            var traff2=traff1[0].childNodes[0].nodeValue.replace("]","");
+          		traff2=traff2.replace("[","");
+          	var traff3=traff2.split(",");
+          	//读取Main_ajax.jsp里面的上行流量
+ 
+   			var myChart = echarts.init(document.getElementById('main'));
+		var option = {
+				    title: {
+				        text: '路   由   层    数   Top  图',
+				        x:'40%'
+				    },
+				  
+				    tooltip: {
+				        trigger: 'axis',
+				        axisPointer: {
+				            type: 'shadow'
+				        }
+				    },
+				    grid: {
+				        left: '3%',
+				        right: '4%',
+				        bottom: '3%',
+				        containLabel: true
+				    },
+				     yAxis: {
+				        type: 'category',
+				    	data:conn3 ,
+				    	},
+				    xAxis: {
+				        type: 'value',
+				        boundaryGap: [0, 0.01]
+				    },
+				  
+				    series: [
+				        {	
+				        	name:'层数',
+				            type: 'bar',
+				            data:traff3 ,
+				        },
+				        
+				    ]
+				};
+		myChart.setOption(option);
+      }else{
+  		var select_table = XMLHttpReq.responseText;
+		cs_index=select_table.indexOf("<cs>", 0);
+		cs_index2=select_table.indexOf("</cs>", 0);
+		select_table=select_table.substring(cs_index, cs_index2);
+        document.getElementById("main").innerHTML=select_table;
+        }  
+      }
+  </script>
+  
+  </head>
+  
+    <body>
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="all">
+	     <div id="select">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<span>网段选择：</span>
+        			<input type="text" id="ip" name="ip" style="width:20%;height:30px;">
+        			<span>用户IP：</span>
+        			<input type="text" id="user" name="user" style="width:10%;height:30px;">
+					<!-- <input type="text"  style="width:300px;height:30px;"  name="search" value="网&nbsp;&nbsp;站" onFocus="this.value = '';" onBlur="if (this.value == '') {this.value = '网&nbsp;&nbsp;站';}" required=""> -->
+					&nbsp;&nbsp;&nbsp;&nbsp;
+				   <input type="submit" name="select" value="查询" onClick="sendRequest()" >
+	    </div>
+	    <div id="main"> 
+	<!--     <iframe src="MAC_number.jsp" width=100% height=100% scrolling="no" frameborder="0"> </iframe>
+	    -->
+	     </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>test</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+    <style type="text/css">
+    .overview-gap{
+		clear: both;
+		background-color: #ececec;
+		height: 18px;
+	}
+	#app{
+		width: 45%;
+		display:inline;
+		float:left;
+	}
+	#user{
+	    width: 49%;
+		display:inline;
+		float:left;
+	}
+	#select{
+	    width: 100%;
+		height:50px;
+	    margin-top:30px;
+		margin-left:10px;
+		text-align:center;
+	}
+	
+	</style>
+
+<script language="javascript">  
+    var XMLHttpReq;
+        //创建XMLHttpRequest对象         
+        function createXMLHttpRequest() {  
+            if(window.XMLHttpRequest) { //Mozilla 浏览器  
+                XMLHttpReq = new XMLHttpRequest();  
+            }  
+            else if (window.ActiveXObject) { // IE浏览器  
+                try {  
+                    XMLHttpReq = new ActiveXObject("Msxml2.XMLHTTP");  
+                } catch (e) {  
+                    try {  
+                        XMLHttpReq = new ActiveXObject("Microsoft.XMLHTTP");  
+                    } catch (e) {}  
+                }  
+            }  
+        }  
+        //发送请求函数  
+        function sendRequest() {  
+            createXMLHttpRequest();  
+            var url = "user_similar_web.jsp?ip="+document.getElementById('to').value;  
+            XMLHttpReq.open("GET", url, true);  
+            XMLHttpReq.onreadystatechange = processResponse;//指定响应函数  
+            XMLHttpReq.send(null);  // 发送请求  
+        }  
+        // 处理返回信息函数  
+        function processResponse() {  
+            if (XMLHttpReq.readyState == 4) { // 判断对象状态  
+                if (XMLHttpReq.status == 200) { // 信息已经成功返回，开始处理信息  
+                    DisplayHot(); 
+                } else { //页面不正常  
+                    //window.alert("您所请求的页面有异常。"); 
+                     
+                }  
+            }  
+        }  
+        function DisplayHot() {  
+             var select = XMLHttpReq.responseText;
+                body_index=select.indexOf("<body>", 0);
+				body_index2=select.indexOf("</body>", 0);
+                select=select.substring(body_index+6, body_index2);
+         if(select.indexOf("您查询的用户不存在！")>0){
+          	window.alert("您查询的用户不存在！");
+          	document.location.reload();
+        }else{
+		        var select_table = XMLHttpReq.responseText;
+				cs_index=select_table.indexOf("<cs>", 0);
+				cs_index2=select_table.indexOf("</cs>", 0);
+				select_table=select_table.substring(cs_index, cs_index2);
+		        document.getElementById("app").innerHTML=select_table;
+		        
+		        var select_table1 = XMLHttpReq.responseText;
+		        cc_index=select_table1.indexOf("<cc>", 0);
+				cc_index2=select_table1.indexOf("</cc>", 0);
+				select_table1=select_table1.substring(cc_index, cc_index2);
+		        document.getElementById("user").innerHTML=select_table1;
+       }
+       }
+    </script>  
+  </head>
+    <body>
+     <div class="overview-gap"></div>
+            <div id="select">
+                   <label for="to">用户:</label>
+					<input type="text" id="to" name="to" style="width:10%;height:30px;">
+					&nbsp;&nbsp;&nbsp;&nbsp;
+				    &nbsp;&nbsp;&nbsp;&nbsp;
+			    	 <input type="submit" name="select" value="查询" onClick="sendRequest()" >
+            </div>
+       <div class="overview-gap"></div>
+	            <div id="app"></div>
+	            <div id="user"></div>
+            
+  </body>
+</html>

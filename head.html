@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title></title>
+<link rel="stylesheet" href="css/global.css">
+<link rel="stylesheet" href="css/common-header9.css">
+<script type="text/javascript" src="./js/base-all.js"></script>
+<script type="text/javascript" src="./js/common-header.js"></script>
+
+<script type="text/javascript">
+    onload = function ()
+    {
+        var lis = document.querySelectorAll ("li");
+        var funny = function (i)
+        {
+            var li = lis[i], a = li.children[0];
+            li.onmouseover = function ()
+            {
+                if (lis.a !== this)
+                {
+                    this.style.backgroundColor = "#000000";
+                }
+            };
+             
+            li.onmouseout = function ()
+            {
+                if (lis.a !== this)
+                {
+                    this.style.backgroundColor = "";
+                }
+            };
+             
+            a.onclick = function ()
+            {
+                if (!!lis.a)
+                {
+                    lis.a.style.backgroundColor = "";
+                }
+                li.style.backgroundColor = "#000000";
+                lis.a = li;
+            }
+        }
+        for ( var i = 0; i < lis.length; i++)
+        {
+            funny (i);
+        }
+    }
+</script>
+ 
+</head>
+<body>
+
+<div  data-spm="2">
+  <div  class="ali-common-header">
+    <div  class="ali-common-header-inner common-header-clearfix">
+      <div  class="activity item pull-left">
+        <div  class="flash-wrap" id="J-ali-activity-img">
+          <img src="images/hubu.png"
+          style="height: 62px;width: 200px;align:left">
+        </div>
+
+        <div class="link activity-url" id="J-activity-url" >
+        </div>
+      </div>
+      <!-- 导航菜单 -->
+      <ul class="menu item pull-left" id="J_common_header_menu" data-spm="201">
+        <li class="top-menu-item" ><a href="treeStat.jsp" target="leftFrame" class="left-font03" onClick="tupian('20');">
+          <span class="menu-hd">
+            总体统计
+          </span></a>
+        </li>
+              <li class="top-menu-item"  ><a href="treeAnalysis.jsp" target="leftFrame" class="left-font03" onClick="tupian('20');">
+           <span class="menu-hd">
+            入侵检测
+          </span></a>
+           <li class="top-menu-item"  ><a href="treeUser.jsp" target="leftFrame" class="left-font03" onClick="tupian('20');" >
+           <span class="menu-hd">
+              根因追踪
+          </span></a>
+        <li class="top-menu-item"   ><a href="treeManage.jsp" target="leftFrame" class="left-font03" onClick="tupian('20');">
+          <span class="menu-hd">
+              系统管理
+          </span></a>
+        </li>
+
+
+      </ul>
+      
+    </div>
+  </div>
+</div>
+
+
+
+</body>
+</html>
+               

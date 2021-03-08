@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>admin-add.html</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+<script type="text/javascript">
+        function login(form){
+            if(form.username.value == ""){
+                alert("用户不能为空！");
+                return false;
+            }
+            if(form.password.value == ""){
+                alert("密码不能为空！");
+                return false;
+            }
+            if(form.passwordConfirm.value == ""){
+                alert("确认密码不能为空！");
+                return false;
+            }
+         var password = document.getElementById("password");
+        var passwordConfirm = document.getElementById("passwordConfirm");
+   		 if(password.value != passwordConfirm.value){
+       		 alert("对不起，您2次输入的密码不一致");
+  		  }else{
+    			alert("提交成功");
+        }
+        }
+</script>
+
+ <style type="text/css">
+	#container{
+		width: 100%;
+		height:300px;
+		margin:0px auto;
+	}
+
+	#space{
+		margin:0px auto;
+		margin-top:30px;
+		margin-left:180px;
+		text-align:center;
+	}
+	input[type="text"]{
+		broder:2px solid #a1a1a1 ;
+		width:200px;
+		dispaly:block;
+		border-radius:5px;
+		border-color:black;
+	}
+	input[type="password"]{
+		broder:2px solid #a1a1a1 ;
+		width:200px;
+		dispaly:block;
+		border-radius:5px;
+		border-color:black;
+	}
+	#logo{
+	margin:0px auto;
+	margin-top:180px;
+	padding:10px;
+	height:70px;
+	width:200px;
+	}
+	#distance{
+		margin:0px auto;
+		margin-top:30px;	
+	}
+	.dump{
+		width: 60px;
+		height:30px;
+		margin-left:-140px;
+		background-color: #0000CD;
+		color:#fff;
+	}
+	.submit{
+		width: 60px;
+		height:30px;
+		margin-left:80px;
+		background-color:#0000CD;
+		color:#fff;
+	}
+</style>
+  </head>
+  
+  <body>
+  <div id="form">
+     <form action="login" method="post" onSubmit="return login();">
+   		
+   		<div id="distance" align='center'  >
+    	<label><b>用&nbsp;&nbsp;户&nbsp;&nbsp;名&nbsp;&nbsp;</b></label>
+    	<input type="text" name="username" value="">
+    	</div>
+  		
+  		<div id="distance" align='center'>
+    	<label><b>密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码&nbsp;&nbsp;&nbsp;&nbsp;</b></label>
+    	<input type="password" name="password" value="">
+    	</div>
+    	
+    	<div id="distance" align='center'>
+    	<label><b>确&nbsp;认&nbsp;密&nbsp;码&nbsp;</b></label>
+    	<input type="password" name="passwordConfirm" value="">
+    	</div>
+    	
+    	<div id="distance" align='center'>
+    	<label><b>角&nbsp;&nbsp;&nbsp;&nbsp;色&nbsp;&nbsp;</b></label>
+    	 <select  name="pro"  id="pro" style="width:8%;height:25px;">
+			    		   <option value="0">管理员</option>
+		 </select>
+    	</div>
+    	<div id="space" align="justify">
+	    	<input class="dump" type="reset" value="&nbsp;&nbsp;清&nbsp;&nbsp除&nbsp;&nbsp;" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	    	<input class="submit" type="submit" value="&nbsp;&nbsp;提&nbsp;&nbsp交&nbsp;&nbsp;" >
+        </div>
+    </form>
+    </div>
+  </body>
+</html>

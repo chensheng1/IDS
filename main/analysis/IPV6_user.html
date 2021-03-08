@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>user_barandline.html</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+     <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+	  <script src="//code.jquery.com/jquery-1.9.1.js"></script>
+	  <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+	  <link rel="stylesheet" href="http://jqueryui.com/resources/demos/style.css">
+	  
+      <script src="../../js/echarts.min.js"></script>
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+
+
+ <style type="text/css">
+	.overview-gap{
+		clear: both;
+		background-color: #ececec;
+		height: 18px;
+	}
+	#select{
+		width:100%;
+		height:30px;
+		position: relative;
+		padding-top: 20px;
+		padding-bottom: 15px;
+		z-index: 2;
+		color: #323437;
+	}
+	#table{
+		width:100%;
+		height:700px;
+	}
+	 #pageStyle{
+	 display:inline-block;
+	 width:32px;
+	 height:32px;
+	 border:1px solid #CCC;
+	 line-height:32px;
+	 text-align:center;
+	 color:#999;
+	 margin-top:20px;
+	 text-decoration:none;
+ 
+	 }
+  #pageStyle:hover{
+	  background-color:#CCC;
+	  }
+  #pageStyle .active{
+	  background-color:#0CF;
+	  color:#ffffff;
+	  }	
+	</style>
+	
+	<script>
+  $(function() {
+    $( "#from" ).datepicker({
+      dateFormat:"yy-mm-dd",
+      changeMonth: true,
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#to" ).datepicker( "option", "minDate", selectedDate );
+      }
+    });
+    
+    $( "#to" ).datepicker({
+      dateFormat:"yy-mm-dd",
+      changeMonth: true,
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#from" ).datepicker( "option", "maxDate", selectedDate );
+       
+      }
+    });
+  });
+  </script>
+	
+<script>
+  $(function() {
+    $( "#from" ).datepicker({
+      dateFormat:"yy-mm-dd",
+      changeMonth: true,
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#to" ).datepicker( "option", "minDate", selectedDate );
+      }
+    });
+    
+    $( "#to" ).datepicker({
+      dateFormat:"yy-mm-dd",
+      changeMonth: true,
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#from" ).datepicker( "option", "maxDate", selectedDate );
+       
+      }
+    });
+  });
+  </script>
+  
+  <script language="javascript">
+    var XMLHttpReq;
+        //创建XMLHttpRequest对象         
+        function createXMLHttpRequest() {  
+            if(window.XMLHttpRequest) { //Mozilla 浏览器  
+                XMLHttpReq = new XMLHttpRequest();  
+            }  
+            else if (window.ActiveXObject) { // IE浏览器  
+                try {  
+                    XMLHttpReq = new ActiveXObject("Msxml2.XMLHTTP");  
+                } catch (e) {  
+                    try {  
+                        XMLHttpReq = new ActiveXObject("Microsoft.XMLHTTP");  
+                    } catch (e) {}  
+                }  
+            }  
+        }  
+        //发送请求函数  
+        function sendRequest() {  
+            createXMLHttpRequest();  
+            var url = "snort_table_select_ajax.jsp?start="+document.getElementById('from').value+"&end="+document.getElementById('to').value
+            XMLHttpReq.open("GET", url, true);  
+            XMLHttpReq.onreadystatechange = processResponse;//指定响应函数  
+            XMLHttpReq.send(null);  // 发送请求  
+        }  
+        // 处理返回信息函数  
+        function processResponse() {  
+            if (XMLHttpReq.readyState == 4) { // 判断对象状态  
+                if (XMLHttpReq.status == 200) { // 信息已经成功返回，开始处理信息  
+                    show(); 
+                } else { //页面不正常  
+                    //window.alert("您所请求的页面有异常。");  
+                }  
+            }  
+        }  
+            
+           function show() {  
+           var select_table = XMLHttpReq.responseText;
+		cs_index=select_table.indexOf("<cs>", 0);
+		cs_index2=select_table.indexOf("</cs>", 0);
+		select_table=select_table.substring(cs_index, cs_index2);
+        document.getElementById("table").innerHTML=select_table;
+        
+        $(function(){
+	 var $table = $('table');
+	 var currentPage = 0;//当前页默认值为0
+	 var pageSize = 10;//每一页显示的数目
+	 $table.bind('paging',function(){
+		 $table.find('tbody tr').hide().slice(currentPage*pageSize,(currentPage+1)*pageSize).show();
+	 });	 
+	 var sumRows = $table.find('tbody tr').length;
+	 var sumPages = Math.ceil(sumRows/pageSize);//总页数
+	 
+	 var $pager = $('<div class="page"></div>');  //新建div，放入a标签,显示底部分页码
+	 for(var pageIndex = 0 ; pageIndex<sumPages ; pageIndex++){
+		 $('<a href="#" id="pageStyle" onclick="changCss(this)"><span>'+(pageIndex+1)+'</span></a>').bind("click",{"newPage":pageIndex},function(event){
+			 currentPage = event.data["newPage"];
+			 $table.trigger("paging");
+			   //触发分页函数
+			 }).appendTo($pager);
+			 $pager.append(" ");
+		 }	 
+		 $pager.insertAfter($table);
+		 $table.trigger("paging");
+		 
+		 //默认第一页的a标签效果
+		 var $pagess = $('#pageStyle');
+		 $pagess[0].style.backgroundColor="#006B00";
+		 $pagess[0].style.color="#ffffff";
+});
+ 
+//a链接点击变色，再点其他回复原色
+        }
+      function changCss(obj){
+	var arr = document.getElementsByTagName("a");
+	for(var i=0;i<arr.length;i++){	
+	 if(obj==arr[i]){       //当前页样式
+	  obj.style.backgroundColor="#006B00";
+	  obj.style.color="#ffffff";
+	}
+	 else
+	 {
+	   arr[i].style.color="";
+	   arr[i].style.backgroundColor="";
+	 }
+	}
+			
+       }
+</script>
+  </head>
+  
+  <body>
+  <div class="overview-gap"></div>
+ <div id="select">
+	                &nbsp;&nbsp;&nbsp;&nbsp;
+					<label for="from">开始时间:</label>
+					<input type="text" id="from" name="from">
+					<font color="red" size="2">(必选*)</font>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<label for="to">结束时间:</label>
+					<input type="text" id="to" name="to">
+					<font color="red" size="2">(必选*)</font>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+				    <input type="submit" name="select" value="查询" onClick="sendRequest()" >
+			
+	    </div>
+	<div class="overview-gap"></div>
+    <div id="table">
+    	<iframe src="ipv6_user_table.jsp" width=100% height=100% scrolling="no" frameborder="0"> </iframe>
+    </div>
+  </body>
+</html>

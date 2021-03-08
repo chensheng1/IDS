@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>web_select.html</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+ 	 <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+	  <script src="//code.jquery.com/jquery-1.9.1.js"></script>
+	  <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+	  <link rel="stylesheet" href="http://jqueryui.com/resources/demos/style.css">
+	  
+	  <script src="../../js/echarts.min.js"></script>
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+
+	 <style type="text/css">
+		ul,li{margin:0; padding:0;}
+		li{list-style:none;}
+	 	#menu{
+	 	width: 100%;
+		height:280px;
+	 	}
+	 	#main{
+	 	 width: 100%;
+	 	 height:50px;
+	 	}
+	 	#main ul {
+	    		white-space:nowrap;
+	    		list-style:none;    
+	    		width:300px;
+				height:261px;
+				margin:10px;
+	    		} 
+	    #main ul li {
+			display:inline-block;
+		    font-family:"黑体";
+			font-size:22px;
+			color:#0A0A0A;
+			width:150px;
+			line-height:50px;
+			text-align:center;
+			cursor:pointer;
+		} 
+	   #main ul li:hover {
+		background-color:#32CD32;
+		color:#fff;
+		} 
+		#main .liSelected{background-color:#32CD32;color:#fff}
+	 	#menu .liSelected{background-color:#000000;color:#fff}
+	    #menu ul {
+	    		 white-space:nowrap;
+	    		list-style:none;    
+	    		width:8%;
+				height:261px;
+				margin:10px;
+	    		} 
+		#menu ul li {
+			display:inline-block;
+		    font-family:"宋体";
+			font-size:20px;
+			color:#353535;
+			width:100%;
+			line-height:50px;
+			text-align:center;
+			cursor:pointer;
+		} 
+	   #menu ul li:hover {
+		background-color:#888;
+		color:#fff;
+		} 
+		#select_class_web{
+			width: 100%;
+		   height:450px;
+		}
+	</style>
+   
+<script>
+  $(function() {
+    $( "#from" ).datepicker({
+      dateFormat:"yy-mm",
+      changeMonth: true,
+      numberOfMonths: 1,
+    
+    });
+
+  });
+ </script> 
+  
+<script language="javascript">
+    var XMLHttpReq;
+    var current_web;
+    var current_values;
+    var ss;
+    var test;
+        //创建XMLHttpRequest对象         
+        function createXMLHttpRequest() {  
+            if(window.XMLHttpRequest) { //Mozilla 浏览器  
+                XMLHttpReq = new XMLHttpRequest();  
+            }  
+            else if (window.ActiveXObject) { // IE浏览器  
+                try {  
+                    XMLHttpReq = new ActiveXObject("Msxml2.XMLHTTP");  
+                } catch (e) {  
+                    try {  
+                        XMLHttpReq = new ActiveXObject("Microsoft.XMLHTTP");  
+                    } catch (e) {}  
+                }  
+            }  
+        }  
+        
+        function xianshi(){
+        var mu = document.getElementById("menu");
+        var li = mu.getElementsByTagName("li");
+        mu.onclick = function(e){
+            e = e || window.event;
+            var target = e.srcElement || e.target;
+            for(var i=0,len=li.length;i<len;i++){
+                li[i].className = target == li[i] ? "liSelected":"";
+            }
+        };
+        }
+         function menu(){
+        var mu = document.getElementById("main");
+        var li = mu.getElementsByTagName("li");
+        mu.onclick = function(e){
+            e = e || window.event;
+            var target = e.srcElement || e.target;
+            for(var i=0,len=li.length;i<len;i++){
+                li[i].className = target == li[i] ? "liSelected":"";
+            }
+        };
+        }
+        //发送请求函数  
+        function sendRequest() {  
+        	menu();
+        	xianshi();
+        	var cc=document.getElementById('ul');
+        	var cs=cc.getElementsByTagName('li');
+        	for(var x=0;x<cs.length;x++){
+        	cs[x].onclick=function(){
+        		ss=this.innerHTML;
+        
+            createXMLHttpRequest();  
+            var url = "web_test.jsp?select="+ss+"&type="+test;//+"&start="+document.getElementById('from').value;
+            XMLHttpReq.open("GET", url, true);  
+            XMLHttpReq.onreadystatechange = processResponse;//指定响应函数  
+            XMLHttpReq.send(null);  // 发送请求 
+            }
+            }
+			var ul = document.getElementById('ulli');
+			var lis = ul.getElementsByTagName('li');
+			for(var i=0;i<lis.length;i++){
+			lis[i].onclick = function(){
+				 test=this.innerHTML;
+			createXMLHttpRequest();  
+            var url = "web_test.jsp?type="+test+"&select="+ss;//+"&start="+document.getElementById('from').value;
+            XMLHttpReq.open("GET", url, true);  
+            XMLHttpReq.onreadystatechange = processResponse;//指定响应函数  
+            XMLHttpReq.send(null);  // 发送请求 
+            
+		}
+		}
+        }  
+        // 处理返回信息函数  
+        function processResponse() {  
+            if (XMLHttpReq.readyState == 4) { // 判断对象状态  
+                if (XMLHttpReq.status == 200) { // 信息已经成功返回，开始处理信息  
+                    show(); 
+                } else { //页面不正常  
+                    //window.alert("您所请求的页面有异常。");  
+                }  
+            }  
+        }  
+        function show() {  
+        
+         var name = XMLHttpReq.responseXML.getElementsByTagName("select_web"); 
+            var name1 = XMLHttpReq.responseXML.getElementsByTagName("select_values"); 
+          	var name2=name[0].childNodes[0].nodeValue.replace("]","");
+          	name2=name2.replace("[","");
+          	name2=name2.substring(1,name2.length);
+          	current_web=name2.split(",");
+          	
+      		var name3=name1[0].childNodes[0].nodeValue.replace("]","");
+          	name3=name3.replace("[","");
+          	current_values=name3.split(",");
+          	
+          	var str1="月度浏览时间";
+            // 基于准备好的dom，初始化echarts实例
+          if(ss==str1){
+            var myChart = echarts.init(document.getElementById('select_class_web'));
+			
+		        // 指定图表的配置项和数据
+		      var option = {
+				    title: {
+				        text: '网站类型的网站统计',
+				        x:'40%'
+				    },
+				    tooltip: {
+				        trigger: 'axis',
+				        axisPointer: {
+				            type: 'shadow'
+				        }
+				    },
+				    grid: {
+				        left: '3%',
+				        right: '4%',
+				        bottom: '3%',
+				        containLabel: true
+				    },
+				     xAxis: {
+				        type: 'category',
+				    	data: current_web,
+				    	},
+				    yAxis: {
+				        type: 'value',
+				        boundaryGap: [0, 0.01]
+				    },
+				  
+				    series: [
+				        {	
+				        	name:'访问时长(s)',
+				            type: 'bar',
+				            data: current_values,
+				        },
+				    ]
+				};
+	        myChart.setOption(option);
+	        }
+	     else{
+	        var myChart = echarts.init(document.getElementById('select_class_web'));
+		
+		        // 指定图表的配置项和数据
+		      var option = {
+				    title: {
+				        text: '网站类型的网站统计',
+				        x:'40%'
+				    },
+				    tooltip: {
+				        trigger: 'axis',
+				        axisPointer: {
+				            type: 'shadow'
+				        }
+				    },
+				    grid: {
+				        left: '3%',
+				        right: '4%',
+				        bottom: '3%',
+				        containLabel: true
+				    },
+				     xAxis: {
+				        type: 'category',
+				    	data: current_web,
+				    	},
+				    yAxis: {
+				        type: 'value',
+				        boundaryGap: [0, 0.01]
+				    },
+				  
+				    series: [
+				        {	
+				        	name:'访问人数',
+				            type: 'bar',
+				            data: current_values,
+				        },
+				    ]
+				};
+	        myChart.setOption(option);
+	        }
+        
+        /*  var select_table = XMLHttpReq.responseText;
+		cs_index=select_table.indexOf("<cs>", 0);
+		cs_index2=select_table.indexOf("</cs>", 0);
+		select_table=select_table.substring(cs_index, cs_index2);
+		window.alert(select_table); */
+       // document.getElementById("select_table").innerHTML=select_table; 
+       }
+ </script>
+ 
+ </head>
+  
+  <body onload="sendRequest()">
+  	<div id="main" class="main">
+  		<ul id="ul">
+  		    <li>月度浏览时间</li>
+			<li>月度覆盖人数</li>
+			<li>日均覆盖人数</li>	
+  		</ul>
+  	</div>
+    <div id="menu" class="menu"> 
+   <!-- <label for="from"><font size="5">时间区间:</font></label>
+	<input type="text" id="from" name="from"> -->
+    	<ul id="ulli">
+    	    <li>全部</li>
+    	   <br/> 
+			<li>IT网站</li>
+			<li>B2B网站</li>
+			<li>财经网站</li>
+			<li>电子邮件</li>
+			<li>音乐网站</li>
+			<li>旅游网站</li>
+			<li>新闻门户</li>
+			<li>娱乐网站</li>
+			<li>房产网站</li>
+			<li>分类广告</li>
+			<li>健康网站</li>
+			<br/>
+			<li>交友社区</li>
+			<li>军事网站</li>
+			<li>企业网站</li>
+			<li>汽车网站</li>
+			<li>软件下载</li>
+			<li>社区博客</li>
+			<li>生活网站</li>
+			<li>时尚网站</li>
+			<li>数字杂志</li>
+			<li>搜索引擎</li>
+			<li>体育网站</li>
+			<br/>
+			<li>网络游戏</li>
+			<li>网上购物</li>
+			<li>网上招聘</li>
+			<li>网站导航</li>
+			<li>文学网站</li>
+			<li>银行支付</li>
+			<li>在线电视台</li>
+			<li>在线视频</li>
+			<li>综合网站</li>
+			<li>其他网站</li>
+		</ul> 
+	</div>
+	<div id="select_class_web">
+		<iframe src="web_select.jsp" width=100% height=100% scrolling="no" frameborder="0"> </iframe>
+	</div>
+  </body>
+</html>

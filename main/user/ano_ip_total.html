@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>system_select.html</title>
+
+	<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+      <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+	  <script src="//code.jquery.com/jquery-1.9.1.js"></script>
+	  <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+	  <link rel="stylesheet" href="http://jqueryui.com/resources/demos/style.css">
+	  
+	  <script src="../../js/echarts.min.js"></script>
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+    
+	 <style type="text/css">
+	 .overview-gap{
+		clear: both;
+		background-color: #ececec;
+		height: 18px;
+	}
+	 #select{
+		width:100%;
+		height:30px;
+		position: relative;
+		padding-top: 20px;
+		padding-bottom: 15px;
+		z-index: 2;
+		color: #323437;
+	}
+	 #select_system{
+	    width:100%;
+		height:400px;
+	}
+	#device_system{
+	    width: 49%;
+		height:500px;
+		display:inline;
+		float:left;
+		border:1px groove ;
+	}
+	#device2_system{
+	   width: 49%;
+		height:500px;
+		display:inline;
+		float:left;
+		border:1px groove;
+	}
+	</style>
+  
+ <script>
+  $(function() {
+    $( "#from" ).datepicker({
+      dateFormat:"yy-mm-dd",
+      changeMonth: true,
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#to" ).datepicker( "option", "minDate", selectedDate );
+      }
+    });
+    
+    $( "#to" ).datepicker({
+      dateFormat:"yy-mm-dd",
+      changeMonth: true,
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#from" ).datepicker( "option", "maxDate", selectedDate );
+       
+      }
+    });
+  });
+  </script>
+  
+<script language="javascript">
+    var XMLHttpReq;
+        //创建XMLHttpRequest对象         
+        function createXMLHttpRequest() {  
+            if(window.XMLHttpRequest) { //Mozilla 浏览器  
+                XMLHttpReq = new XMLHttpRequest();  
+            }  
+            else if (window.ActiveXObject) { // IE浏览器  
+                try {  
+                    XMLHttpReq = new ActiveXObject("Msxml2.XMLHTTP");  
+                } catch (e) {  
+                    try {  
+                        XMLHttpReq = new ActiveXObject("Microsoft.XMLHTTP");  
+                    } catch (e) {}  
+                }  
+            }  
+        }  
+        //发送请求函数  
+        function sendRequest() {  
+            createXMLHttpRequest();  
+            var url = "ano_adress_select_ajax.jsp?start="+document.getElementById('from').value+"&end="+document.getElementById('to').value; 
+            XMLHttpReq.open("GET", url, true);  
+            XMLHttpReq.onreadystatechange = processResponse;//指定响应函数  
+            XMLHttpReq.send(null);  // 发送请求  
+        }  
+        // 处理返回信息函数  
+        function processResponse() {  
+            if (XMLHttpReq.readyState == 4) { // 判断对象状态  
+                if (XMLHttpReq.status == 200) { // 信息已经成功返回，开始处理信息  
+                    show(); 
+                } else { //页面不正常  
+                    //window.alert("您所请求的页面有异常。");  
+                }  
+            }  
+        }  
+        function show() {  
+        	//取出web_ajax.jsp里面画这段是时间top10的饼状图
+            var name = XMLHttpReq.responseXML.getElementsByTagName("system_name"); 
+            var name1 = XMLHttpReq.responseXML.getElementsByTagName("system_values"); 
+          	var name2=name[0].childNodes[0].nodeValue.replace("]","");
+          	name2=name2.replace("[","");
+          	name2=name2.substring(1,name2.length);
+          	var system_name=name2.split(",");
+          	
+          	
+      		var name3=name1[0].childNodes[0].nodeValue.replace("]","");
+          	name3=name3.replace("[","");
+          	var system_values=name3.split(",");
+          	
+          	var memb = XMLHttpReq.responseXML.getElementsByTagName("video");
+      		var memb2=memb[0].childNodes[0].nodeValue.replace("]","");
+          	memb2=memb2.replace("[","");
+          	var system_name1=memb2.split(",");
+            var member = XMLHttpReq.responseXML.getElementsByTagName("number");
+      		var member2=member[0].childNodes[0].nodeValue.replace("]","");
+          	member2=member2.replace("[","");
+          	var system_member=member2.split(",");
+            // 基于准备好的dom，初始化echarts实例
+             var myChart = echarts.init(document.getElementById('device_system'));
+		
+		        // 指定图表的配置项和数据
+		       var option = {
+				    title : {
+				        text: '本时间段异常源IP TOP10',
+				    },
+				    tooltip : {
+				        trigger: 'item',
+				        formatter: "{a} <br/>{b} : {c} ({d}%)",
+				    },
+				    legend: {
+				    	top:60,
+				        orient : 'vertical',
+				        x : '10%',
+				        data:system_name
+				    },
+				    toolbox: {
+				        show : true,
+				         x : '70%',
+				        feature : {
+				            mark : {show: true},
+				            dataView : {show: true, readOnly: false},
+				            magicType : {
+				                show: true, 
+				                type: ['pie', 'funnel'],
+				                
+				            },
+				            restore : {show: true},
+				            saveAsImage : {show: true}
+				        }
+				    },
+				    calculable : true,
+				    series : [
+				        {
+				            name:'源IP',
+				            type:'pie',
+				            radius : '70%',
+				            center: ['60%', '50%'],
+				            data:[{value:system_values[0],name:system_name[0]},
+				            	  {value:system_values[1],name:system_name[1]},
+				            	  {value:system_values[2],name:system_name[2]},
+				            	  {value:system_values[3],name:system_name[3]},
+				            	  {value:system_values[4],name:system_name[4]},
+				            	  {value:system_values[5],name:system_name[5]},
+				            	  {value:system_values[6],name:system_name[6]},
+				            	  {value:system_values[7],name:system_name[7]},
+				            	  {value:system_values[8],name:system_name[8]},
+				            	  {value:system_values[9],name:system_name[9]},
+				            ],
+				            itemStyle: {
+				                emphasis: {
+				                    shadowBlur: 10,
+				                    shadowOffsetX: 0,
+				                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+				                }
+				            }
+				        }
+				    ]
+				};
+	        myChart.setOption(option);
+	        
+	        
+	         var myChart1 = echarts.init(document.getElementById('device2_system'));
+		
+		        // 指定图表的配置项和数据
+		       var option1 = {
+				    title : {
+				        text: '本段时间异常目标IP TOP10',
+				    },
+				    tooltip : {
+				        trigger: 'item',
+				        formatter: "{a} <br/>{b} : {c} ({d}%)",
+				    },
+				    legend: {
+				    	top:60,
+				        orient : 'vertical',
+				        x : '10%',
+				        data:system_name1
+				    },
+				    toolbox: {
+				        show : true,
+				         x : '70%',
+				        feature : {
+				            mark : {show: true},
+				            dataView : {show: true, readOnly: false},
+				            magicType : {
+				                show: true, 
+				                type: ['pie', 'funnel'],
+				                
+				            },
+				            restore : {show: true},
+				            saveAsImage : {show: true}
+				        }
+				    },
+				    calculable : true,
+				    series : [
+				        {
+				            name:'目标IP',
+				            type:'pie',
+				            radius : '70%',
+				            center: ['60%', '50%'],
+				            data:[{value:system_member[0],name:system_name1[0]},
+				            	  {value:system_member[1],name:system_name1[1]},
+				            	  {value:system_member[2],name:system_name1[2]},
+				            	  {value:system_member[3],name:system_name1[3]},
+				            	  {value:system_member[4],name:system_name1[4]},
+				            	  {value:system_member[5],name:system_name1[5]},
+				            	  {value:system_member[6],name:system_name1[6]},
+				            	  {value:system_member[7],name:system_name1[7]},
+				            	  {value:system_member[8],name:system_name1[8]},
+				            	  {value:system_member[9],name:system_name1[9]},
+				            ],
+				            itemStyle: {
+				                emphasis: {
+				                    shadowBlur: 10,
+				                    shadowOffsetX: 0,
+				                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+				                }
+				            }
+				        }
+				    ]
+				};
+	        myChart1.setOption(option1);
+        }  
+ </script>
+ 
+ </head>
+  
+  <body>
+   <div class="overview-gap"></div>
+    <div id="select">
+				    &nbsp;&nbsp;&nbsp;&nbsp;
+				    &nbsp;&nbsp;&nbsp;&nbsp;
+					<label for="from">开始时间:</label>
+					<input type="text" id="from" name="from">
+					<font color="red" size="2">(必选*)</font>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<label for="to">结束时间:</label>
+					<input type="text" id="to" name="to">
+					<font color="red" size="2">(必选*)</font>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					&nbsp;&nbsp;&nbsp;&nbsp;
+			    <input type="submit" name="select" value="查询" onClick="sendRequest()" >
+	    </div>
+	     <div class="overview-gap"></div>
+     <div id="select_system">
+           <div id="device_system">
+            <iframe src="an_origip.jsp" width=100% height=100% scrolling="no" frameborder="0"> </iframe>
+           </div>
+           <div id="device2_system">
+            <iframe src="ano_respip.jsp" width=100% height=100% scrolling="no" frameborder="0"> </iframe>
+           </div>
+        </div>
+	
+  </body>
+</html>

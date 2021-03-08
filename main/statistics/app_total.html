@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>app_total.html</title>
+    
+	<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+      <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+	  <script src="//code.jquery.com/jquery-1.9.1.js"></script>
+	  <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+	  <link rel="stylesheet" href="http://jqueryui.com/resources/demos/style.css">
+	  
+	  <script src="../../js/echarts.min.js"></script>
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+
+
+  <style type="text/css">
+	#all{
+		width:100%;
+		height:450px;
+	}
+	.overview-gap{
+		clear: both;
+		background-color: #ececec;
+		height: 18px;
+	}
+	#top10{
+		width: 49%;
+		height:450px;
+		display:inline;
+		float:left;
+		border:1px  groove;
+	}
+	#select{
+		width:100%;
+		height:30px;
+		position: relative;
+		padding-top: 20px;
+		padding-bottom: 15px;
+		z-index: 2;
+		color: #323437;
+	}
+	#select_user{
+		width: 49%;
+		height:450px;
+		display:inline;
+		float:left;
+		border:1px  groove;
+	}
+	#select_member{
+		width: 100%;
+		height:400px;
+		display:inline;
+		float:left;
+		border:1px  groove;
+	}
+	#select_browse{
+		width: 100%;
+		height:400px;
+		display:inline;
+		float:left;
+		border:1px  groove;
+	}
+	#select_duration{
+		width: 100%;
+		height:400px;
+		display:inline;
+		float:left;
+		border:1px  groove;
+	}
+	#app_class{
+	width:100%;
+		height:750px;
+		border:1px  groove;
+	}
+	</style>
+	
+<script>
+  $(function() {
+    $( "#from" ).datepicker({
+      dateFormat:"yy-mm-dd",
+      changeMonth: true,
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#to" ).datepicker( "option", "minDate", selectedDate );
+      }
+    });
+    
+    $( "#to" ).datepicker({
+      dateFormat:"yy-mm-dd",
+      changeMonth: true,
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#from" ).datepicker( "option", "maxDate", selectedDate );
+       
+      }
+    });
+  });
+  </script>
+  
+  <script language="javascript">
+    var XMLHttpReq;
+    var app_name;
+    var app_value;
+        //创建XMLHttpRequest对象         
+        function createXMLHttpRequest() {  
+            if(window.XMLHttpRequest) { //Mozilla 浏览器  
+                XMLHttpReq = new XMLHttpRequest();  
+            }  
+            else if (window.ActiveXObject) { // IE浏览器  
+                try {  
+                    XMLHttpReq = new ActiveXObject("Msxml2.XMLHTTP");  
+                } catch (e) {  
+                    try {  
+                        XMLHttpReq = new ActiveXObject("Microsoft.XMLHTTP");  
+                    } catch (e) {}  
+                }  
+            }  
+        }  
+        //发送请求函数  
+        function sendRequest() {  
+            createXMLHttpRequest();  
+            var url = "app_ajax.jsp?start="+document.getElementById('from').value+"&end="+document.getElementById('to').value+"&user="+document.getElementById('user').value; 
+            XMLHttpReq.open("GET", url, true);  
+            XMLHttpReq.onreadystatechange = processResponse;//指定响应函数  
+            XMLHttpReq.send(null);  // 发送请求  
+        }  
+        // 处理返回信息函数  
+        function processResponse() {  
+            if (XMLHttpReq.readyState == 4) { // 判断对象状态  
+                if (XMLHttpReq.status == 200) { // 信息已经成功返回，开始处理信息  
+                    show(); 
+                } else { //页面不正常  
+                    //window.alert("您所请求的页面有异常。");  
+                }  
+            }  
+        }  
+        function show() {  
+            var name = XMLHttpReq.responseXML.getElementsByTagName("select_app_time"); 
+            var name1 = XMLHttpReq.responseXML.getElementsByTagName("select_values_time"); 
+          	var name2=name[0].childNodes[0].nodeValue.replace("]","");
+          	name2=name2.replace("[","");
+          	name2=name2.substring(1,name2.length);
+            app_name=name2.split(",");
+          	
+      		var name3=name1[0].childNodes[0].nodeValue.replace("]","");
+          	name3=name3.replace("[","");
+            app_values=name3.split(",");
+            
+            var date = XMLHttpReq.responseXML.getElementsByTagName("select_app_time1"); 
+          	var date2=date[0].childNodes[0].nodeValue.replace("]","");
+          	date2=date2.replace("[","");
+          	date2=date2.substring(1,date2.length);
+            var user_name=date2.split(",");
+ 
+            var out = XMLHttpReq.responseXML.getElementsByTagName("select_values_time1");
+            var out2=out[0].childNodes[0].nodeValue.replace("]","");
+          	out2=out2.replace("[","");
+            var user_value=out2.split(","); 
+          /* 	var date = XMLHttpReq.responseXML.getElementsByTagName("select_app"); 
+          	var date2=date[0].childNodes[0].nodeValue.replace("]","");
+          	date2=date2.replace("[","");
+            var app_sum=date2.split(","); */
+ 			
+            var time= XMLHttpReq.responseXML.getElementsByTagName("app_time");
+            var time2=time[0].childNodes[0].nodeValue.replace("]","");
+          	time2=time2.replace("[","");
+          	time2=time2.substring(1,time2.length);
+            var app_time=time2.split(",");
+            
+            var browse= XMLHttpReq.responseXML.getElementsByTagName("app_browse");
+            var browse2=browse[0].childNodes[0].nodeValue.replace("]","");
+          	browse2=browse2.replace("[","");
+            var app_browse=browse2.split(",");
+            
+            var member= XMLHttpReq.responseXML.getElementsByTagName("app_member");
+            var member2=member[0].childNodes[0].nodeValue.replace("]","");
+          	member2=member2.replace("[","");
+            var app_member=member2.split(",");
+            
+            var duration= XMLHttpReq.responseXML.getElementsByTagName("app_duration");
+            var duration2=duration[0].childNodes[0].nodeValue.replace("]","");
+          	duration2=duration2.replace("[","");
+            var app_duration=duration2.split(",");
+        // 基于准备好的dom，初始化echarts实例
+             var myChart = echarts.init(document.getElementById('select_user'));
+		
+		        // 指定图表的配置项和数据
+		       var option = {
+				    title : {
+				        text: '本段时间的top10 App分布(按使用时长)',
+				  
+				    },
+				    tooltip : {
+				        trigger: 'item',
+				        formatter: "{a} <br/>{b} : {c} ({d}%)"
+				    },
+				    legend: {
+				    	top:60,
+				        orient : 'vertical',
+				        x : 'left',
+				        data:app_name
+				    },
+				    toolbox: {
+				        show : true,
+				        feature : {
+				            mark : {show: true},
+				            dataView : {show: true, readOnly: false},
+				            magicType : {
+				                show: true, 
+				                type: ['pie', 'funnel'],
+				                
+				            },
+				            restore : {show: true},
+				            saveAsImage : {show: true}
+				        }
+				    },
+				    calculable : true,
+				    series : [
+				        {
+				            name:'Top10 App统计(/s)',
+				            type:'pie',
+				            radius : '70%',
+				            center: ['60%', '50%'],
+				            data:[{value:app_values[0],name:app_name[0]},
+				            	  {value:app_values[1],name:app_name[1]},
+				            	  {value:app_values[2],name:app_name[2]},
+				            	  {value:app_values[3],name:app_name[3]},
+				            	  {value:app_values[4],name:app_name[4]},
+				            	  {value:app_values[5],name:app_name[5]},
+				            	  {value:app_values[6],name:app_name[6]},
+				            	  {value:app_values[7],name:app_name[7]},
+				            	  {value:app_values[8],name:app_name[8]},
+				            	  {value:app_values[9],name:app_name[9]},
+				            ],
+				            itemStyle: {
+				                emphasis: {
+				                    shadowBlur: 10,
+				                    shadowOffsetX: 0,
+				                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+				                }
+				            }
+				        }
+				    ]
+				};
+	        myChart.setOption(option);
+	        
+	         var myChart1 = echarts.init(document.getElementById('top10'));
+		
+		        // 指定图表的配置项和数据
+		       var option1 = {
+				    title : {
+				        text: '本段时间 Top 10 App分布(按用户统计)',
+				
+				    },
+				    tooltip : {
+				        trigger: 'item',
+				        formatter: "{a} <br/>{b} : {c} ({d}%)"
+				    },
+				    legend: {
+				    	top:60,
+				        orient : 'vertical',
+				        x : 'left',
+				        data:user_name
+				    },
+				    toolbox: {
+				        show : true,
+				        feature : {
+				            mark : {show: true},
+				            dataView : {show: true, readOnly: false},
+				            magicType : {
+				                show: true, 
+				                type: ['pie', 'funnel'],
+				                
+				            },
+				            restore : {show: true},
+				            saveAsImage : {show: true}
+				        }
+				    },
+				    calculable : true,
+				    series : [
+				        {
+				            name:'APP Top 10(/人数)',
+				            type:'pie',
+				            radius : '70%',
+				            center: ['60%', '50%'],
+				            data:[{value:user_value[0],name:user_name[0]},
+				            	  {value:user_value[1],name:user_name[1]},
+				            	  {value:user_value[2],name:user_name[2]},
+				            	  {value:user_value[3],name:user_name[3]},
+				            	  {value:user_value[4],name:user_name[4]},
+				            	  {value:user_value[5],name:user_name[5]},
+				            	  {value:user_value[6],name:user_name[6]},
+				            	  {value:user_value[7],name:user_name[7]},
+				            	  {value:user_value[8],name:user_name[8]},
+				            	  {value:user_value[9],name:user_name[9]},
+				            ],
+				            itemStyle: {
+				                emphasis: {
+				                    shadowBlur: 10,
+				                    shadowOffsetX: 0,
+				                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+				                }
+				            }
+				        }
+				    ]
+				};
+	        myChart1.setOption(option1);
+	        //折线图
+	     /* var myChart1 = echarts.init(document.getElementById('select_time'));
+	         var option1 = {
+				     title : {
+				        text: '查询网站在本时间段的情况',
+				    },
+				    tooltip : {
+				        trigger: 'axis',
+				    },
+				    toolbox: {
+				        show : true,
+				        feature : {
+				            mark : {show: true},
+				            dataView : {show: true, readOnly: false},
+				            magicType : {show: true, type: ['line', 'bar']},
+				            restore : {show: true},
+				            saveAsImage : {show: true},
+				        },
+				    },
+				    calculable : true,
+				    grid: {
+				        left: '3%',
+				        right: '4%',
+				        bottom: '3%',
+				        containLabel: true,
+				    },
+				    xAxis : [
+				        {
+				            type : 'category',
+				            data :['浏览量','访客数','IP数','访问时长'],
+				           
+				        },
+				    ],
+				    yAxis: {
+				        type: 'value',
+				        boundaryGap: [0, 0.01],
+				    },
+				    series : [
+				         {
+				            type:'bar',
+				            data:app_sum,
+				        }
+				    ]
+				};
+			myChart1.setOption(option1); */
+			
+			
+		var myChart2 = echarts.init(document.getElementById('select_browse'));
+	        var option2 = {
+		        		title: {
+				        text: 'APP使用量(按天统计)'
+				   	 },
+					    tooltip : {
+					        trigger: 'axis',
+					    },
+					    legend: {
+					        data:['使用量(/次数)']
+					    },
+					    toolbox: {
+					        show : true,
+					        feature : {
+					            mark : {show: true},
+					            dataView : {show: true, readOnly: false},
+					            magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+					            restore : {show: true},
+					            saveAsImage : {show: true}
+					        }
+					    },
+					    calculable : true,
+					    xAxis : [
+					        {
+					            type : 'category',
+					            boundaryGap : false,
+					            data : app_time
+					        }
+					    ],
+					    yAxis : [
+					        {
+					        	
+					            type : 'value',
+					        }
+					    ],
+					    series : [
+					        {
+					            name:'使用量(/次数)',
+					            type:'line',
+					            stack: '总量',
+					            itemStyle: {normal: {areaStyle:{
+					            								type: 'default',
+					            								}
+					            							}},
+					            data:app_browse,
+					        },
+					    ]
+					};
+					myChart2.setOption(option2);
+					
+		var myChart3 = echarts.init(document.getElementById('select_member'));
+	        var option3 = {
+		        		title: {
+				        text: 'APP访客数(按天统计)'
+				   	 },
+					    tooltip : {
+					        trigger: 'axis',
+					    },
+					    legend: {
+					        data:['访客(/人数)']
+					    },
+					    toolbox: {
+					        show : true,
+					        feature : {
+					            mark : {show: true},
+					            dataView : {show: true, readOnly: false},
+					            magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+					            restore : {show: true},
+					            saveAsImage : {show: true}
+					        }
+					    },
+					    calculable : true,
+					    xAxis : [
+					        {
+					            type : 'category',
+					            boundaryGap : false,
+					            data : app_time
+					        }
+					    ],
+					    yAxis : [
+					        {
+					        	
+					            type : 'value',
+					        }
+					    ],
+					    series : [
+					        {
+					            name:'访客(/人数)',
+					            type:'line',
+					            stack: '总量',
+					            itemStyle: {normal: {areaStyle:{
+					            								type: 'default',
+					            								color:'#0080FF',
+					            								}
+					            							}},
+					            data:app_member,
+					        },
+					    ]
+					};
+					myChart3.setOption(option3);
+					
+					
+		   var myChart4 = echarts.init(document.getElementById('select_duration'));
+	        var option4 = {
+		        		title: {
+				        text: 'APP访问时长(按天统计)'
+				   	 },
+					    tooltip : {
+					        trigger: 'axis',
+					    },
+					    legend: {
+					        data:['浏览时长(/小时)']
+					    },
+					    toolbox: {
+					        show : true,
+					        feature : {
+					            mark : {show: true},
+					            dataView : {show: true, readOnly: false},
+					            magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+					            restore : {show: true},
+					            saveAsImage : {show: true}
+					        }
+					    },
+					    calculable : true,
+					    xAxis : [
+					        {
+					            type : 'category',
+					            boundaryGap : false,
+					            data : app_time
+					        }
+					    ],
+					    yAxis : [
+					        {
+					        	
+					            type : 'value',
+					        }
+					    ],
+					    series : [
+					        {
+					            name:'浏览时长(/小时)',
+					            type:'line',
+					            stack: '总量',
+					            itemStyle: {normal: {areaStyle:{
+					            								type: 'default',
+					            								color:'#00E3E3',
+					            								}
+					            							}},
+					            data:app_duration,
+					        },
+					    ]
+					};
+					myChart4.setOption(option4);
+        }  
+  </script>
+  </head>
+  
+  <body>
+      <div id="total">
+        <div class="overview-gap"></div>
+        <div id="select">
+        			&nbsp;&nbsp;&nbsp;&nbsp;
+				    &nbsp;&nbsp;&nbsp;&nbsp;
+				    &nbsp;&nbsp;&nbsp;&nbsp;
+					<label for="from">开始时间:</label>
+					<input type="text" id="from" name="from">
+					<font color="red" size="2">(必选*)</font>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<label for="to">结束时间:</label>
+					<input type="text" id="to" name="to">
+					<font color="red" size="2">(必选*)</font>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					&nbsp;&nbsp;&nbsp;&nbsp;
+        			<span>APP：</span>
+        			<input type="text" id="user" name="user">
+        			&nbsp;&nbsp;&nbsp;&nbsp;
+				    &nbsp;&nbsp;&nbsp;&nbsp;
+			    	 <input type="submit" name="select" value="查询" onClick="sendRequest()" >
+	    </div>
+	    <div class="overview-gap"></div>
+	    <div id="all">
+		        <div id="top10">
+		            <iframe src="app2.jsp" width=100% height=100% scrolling="no" frameborder="0"> </iframe>
+		        </div>
+		        <div id="select_user">
+		            <iframe src="app.jsp" width=100% height=100% scrolling="no" frameborder="0"> </iframe>
+		        </div>
+        </div>
+           <div id="select_browse">
+                <iframe src="app_browse_line.jsp" width=100% height=100% scrolling="no" frameborder="0"> </iframe>
+           </div>
+		    <div id="select_member">
+		        <iframe src="app_member_line.jsp" width=100% height=100% scrolling="no" frameborder="0"> </iframe>
+		    </div>
+		    <div id="select_duration">
+		        <iframe src="app_duration_line.jsp" width=100% height=100% scrolling="no" frameborder="0"> </iframe>
+		    </div>
+
+    </div>
+  </body>
+</html>

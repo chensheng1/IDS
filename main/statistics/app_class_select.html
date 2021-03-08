@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>app_select.html</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+ 	 <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+	  <script src="//code.jquery.com/jquery-1.9.1.js"></script>
+	  <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+	  
+	   <script src="../../js/echarts.min.js"></script>
+	  <link rel="stylesheet" href="http://jqueryui.com/resources/demos/style.css">
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+
+	 <style type="text/css">
+	 .overview-gap{
+		clear: both;
+		background-color: #ececec;
+		height: 18px;
+	}
+	 #app_use{
+		width:100%;
+		height:100px;
+	}
+	 	#menu{
+	 	width: 100%;
+		height:200px;
+	 	}
+	 	#main{
+	 	 width: 100%;
+	 	 height:50px;
+	 	}
+	 	#main ul {
+	    		white-space:nowrap;
+	    		list-style:none;    
+	    		width:300px;
+				height:261px;
+				margin:10px;
+	    		} 
+	    #main ul li {
+			display:inline-block;
+		    font-family:"黑体";
+			font-size:22px;
+			color:#0A0A0A;
+			width:150px;
+			line-height:50px;
+			text-align:center;
+			cursor:pointer;
+		} 
+	   #main ul li:hover {
+		background-color:#32CD32;
+		color:#fff;
+		} 
+		#main .liSelected{background-color:#32CD32;color:#fff}
+	   #menu .liSelected{background-color:#000000;color:#fff}
+	    #menu ul {
+	    		 white-space:nowrap;
+	    		list-style:none;    
+	    		width:8%;
+				height:261px;
+				margin:10px;
+	    		} 
+		#menu ul li {
+			display:inline-block;
+		    font-family:"宋体";
+			font-size:20px;
+			color:#353535;
+			width:100%;
+			line-height:50px;
+			text-align:center;
+			cursor:pointer;
+		} 
+	   #menu ul li:hover {
+		background-color:#888;
+		color:#fff;
+		} 
+		#select_class_app{
+			width: 100%;
+		   height:500px;
+		}
+	</style>
+  
+<script language="javascript">
+    var XMLHttpReq;
+    var web_name;
+    var web_value;
+     var ss;
+        //创建XMLHttpRequest对象         
+        function createXMLHttpRequest() {  
+            if(window.XMLHttpRequest) { //Mozilla 浏览器  
+                XMLHttpReq = new XMLHttpRequest();  
+            }  
+            else if (window.ActiveXObject) { // IE浏览器  
+                try {  
+                    XMLHttpReq = new ActiveXObject("Msxml2.XMLHTTP");  
+                } catch (e) {  
+                    try {  
+                        XMLHttpReq = new ActiveXObject("Microsoft.XMLHTTP");  
+                    } catch (e) {}  
+                }  
+            }  
+        }  
+        
+        function xianshi(){
+        var mu = document.getElementById("menu");
+        var li = mu.getElementsByTagName("li");
+        mu.onclick = function(e){
+            e = e || window.event;
+            var target = e.srcElement || e.target;
+            for(var i=0,len=li.length;i<len;i++){
+                li[i].className = target == li[i] ? "liSelected":"";
+            }
+        };
+        }
+         function menu(){
+        var mu = document.getElementById("main");
+        var li = mu.getElementsByTagName("li");
+        mu.onclick = function(e){
+            e = e || window.event;
+            var target = e.srcElement || e.target;
+            for(var i=0,len=li.length;i<len;i++){
+                li[i].className = target == li[i] ? "liSelected":"";
+            }
+        };
+        }
+        //发送请求函数  
+        function sendRequest() {  
+        var mu = document.getElementById("main");
+        var li = mu.getElementsByTagName("li");
+        li[0].className = "liSelected";
+        var mu1 = document.getElementById("menu");
+        var li1 = mu1.getElementsByTagName("li");
+        li1[0].className = "liSelected";
+        	menu();
+        	xianshi();
+        	var cc=document.getElementById('ul');
+        	var cs=cc.getElementsByTagName('li');
+        	for(var x=0;x<cs.length;x++){
+        	cs[x].onclick=function(){
+        		ss=this.innerHTML;
+        	createXMLHttpRequest();  
+            var url = "app_select_class_ajax.jsp?select="+ss+"&type="+test;//+"&start="+document.getElementById('from').value;
+            XMLHttpReq.open("GET", url, true);  
+            XMLHttpReq.onreadystatechange = processResponse;//指定响应函数  
+            XMLHttpReq.send(null);  // 发送请求 
+             }
+            }
+			var ul = document.getElementById('ulli');
+			var lis = ul.getElementsByTagName('li');
+			var test;
+			for(var i=0;i<lis.length;i++){
+			lis[i].onclick = function(){
+			 test=this.innerHTML;
+			 createXMLHttpRequest();  
+            var url = "app_select_class_ajax.jsp?type="+test+"&select="+ss;
+            //+"&start="+document.getElementById('from').value;
+             XMLHttpReq.open("GET", url, true);  
+            XMLHttpReq.onreadystatechange = processResponse;//指定响应函数  
+            XMLHttpReq.send(null);  // 发送请求  
+			}
+			}
+        }  
+        // 处理返回信息函数  
+        function processResponse() {  
+            if (XMLHttpReq.readyState == 4) { // 判断对象状态  
+                if (XMLHttpReq.status == 200) { // 信息已经成功返回，开始处理信息  
+                    show(); 
+                } else { //页面不正常  
+                    //window.alert("您所请求的页面有异常。");  
+                }  
+            }  
+        }  
+        function show() {  
+        	//取出web_ajax.jsp里面画这段是时间top10的饼状图
+         var name = XMLHttpReq.responseXML.getElementsByTagName("select_app"); 
+            var name1 = XMLHttpReq.responseXML.getElementsByTagName("select_values"); 
+          	var name2=name[0].childNodes[0].nodeValue.replace("]","");
+          	name2=name2.replace("[","");
+          	name2=name2.substring(1,name2.length);
+          	var month_app=name2.split(",");
+          	
+          	
+      		var name3=name1[0].childNodes[0].nodeValue.replace("]","");
+          	name3=name3.replace("[","");
+          	var month_values=name3.split(",");
+          	
+          var str1="月度覆盖人数";
+          var str2="当天覆盖人数";
+          if(ss==str2||ss==str1){
+            // 基于准备好的dom，初始化echarts实例
+          var myChart = echarts.init(document.getElementById('select_class_app'));
+		
+		        // 指定图表的配置项和数据
+		      var option = {
+				    title: {
+				        text: 'app类型的统计',
+				        x:'40%'
+				    },
+				    tooltip: {
+				        trigger: 'axis',
+				        axisPointer: {
+				            type: 'shadow'
+				        }
+				    },
+				    grid: {
+				        left: '3%',
+				        right: '4%',
+				        bottom: '3%',
+				        containLabel: true
+				    },
+				     xAxis: {
+				        type: 'category',
+				    	data: month_app,
+				    	},
+				    yAxis: {
+				        type: 'value',
+				        boundaryGap: [0, 0.01]
+				    },
+				  
+				    series: [
+				        {	
+				        	name:'访问人数',
+				            type: 'bar',
+				            data: month_values,
+				        },
+				    ]
+				};
+	        myChart.setOption(option);
+	      }else{
+	        
+	          var myChart = echarts.init(document.getElementById('select_class_app'));
+		
+		        // 指定图表的配置项和数据
+		      var option = {
+				    title: {
+				        text: 'app类型的统计',
+				        x:'40%'
+				    },
+				    tooltip: {
+				        trigger: 'axis',
+				        axisPointer: {
+				            type: 'shadow'
+				        }
+				    },
+				    grid: {
+				        left: '3%',
+				        right: '4%',
+				        bottom: '3%',
+				        containLabel: true
+				    },
+				     xAxis: {
+				        type: 'category',
+				    	data: month_app,
+				    	},
+				    yAxis: {
+				        type: 'value',
+				        boundaryGap: [0, 0.01]
+				    },
+				  
+				    series: [
+				        {	
+				        	name:'访问时长(s)',
+				            type: 'bar',
+				            data: month_values,
+				        },
+				    ]
+				};
+	        myChart.setOption(option);
+	        }
+        }
+      
+    
+ </script>
+ 
+ </head>
+  
+  <body onload="sendRequest()">
+   <div class="overview-gap"></div>
+        <div id="app_use">
+      		<iframe src="app_count.jsp" width=100% height=100% scrolling="no" frameborder="0"> </iframe>
+      	</div>
+        <div class="overview-gap"></div>
+    <div id="main" class="main">
+  		<ul id="ul">
+  		    <li>月度浏览时长</li>
+			<li>月度覆盖人数</li>
+			<li>当天覆盖人数</li>	
+  		</ul>
+  	</div>
+    <div id="menu" class="menu"> 
+    	<ul id="ulli">
+    	    <li>全部</li>
+			<li>教育工具</li>
+			<li>新闻资讯</li>
+			<li>浏览器</li>
+			<li>游戏服务</li>
+			<li>网络购物</li>
+			<li>网络直播</li>
+			<li>社区交友</li>
+			<li>在线阅读</li>
+			<li>在线视频</li>
+			<li>在线音乐</li>
+			<br/>
+			<li>个人工具</li>
+			<li>导航地图</li>
+			<li>实用工具</li>
+			<li>即时通讯</li>
+			<li>厂商商城</li>
+			<li>其它</li>
+			
+		</ul> 
+	</div>
+	<div id="select_class_app">
+		<iframe src="app_select.jsp" width=100% height=100% scrolling="no" frameborder="0"> </iframe>
+	</div>
+  </body>
+</html>

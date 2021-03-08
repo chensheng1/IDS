@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>web_total.html</title>
+    
+	<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+      <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+	  <script src="//code.jquery.com/jquery-1.9.1.js"></script>
+	  <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+	  <link rel="stylesheet" href="http://jqueryui.com/resources/demos/style.css">
+	  
+	  <script src="../../js/echarts.min.js"></script>
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+
+
+  <style type="text/css">
+	#all{
+		width:100%;
+		height:400px;
+		border:1px  groove;
+	}
+	.overview-gap{
+		clear: both;
+		background-color: #ececec;
+		height: 18px;
+	}
+	#select{
+		width:100%;
+		height:30px;
+		position: relative;
+		padding-top: 20px;
+		padding-bottom: 15px;
+		z-index: 2;
+		color: #323437;
+	}
+	#user_use{
+		width:100%;
+		height:120px;
+	}
+	</style>
+	
+<script>
+  $(function() {
+    $( "#from" ).datepicker({
+      dateFormat:"yy-mm-dd",
+      changeMonth: true,
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#to" ).datepicker( "option", "minDate", selectedDate );
+      }
+    });
+    
+    $( "#to" ).datepicker({
+      dateFormat:"yy-mm-dd",
+      changeMonth: true,
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#from" ).datepicker( "option", "maxDate", selectedDate );
+       
+      }
+    });
+  });
+  </script>
+  
+  <script language="javascript">
+    var XMLHttpReq;
+    var select;
+    var select_number;
+    var select_date;
+        //创建XMLHttpRequest对象         
+        function createXMLHttpRequest() {  
+            if(window.XMLHttpRequest) { //Mozilla 浏览器  
+                XMLHttpReq = new XMLHttpRequest();  
+            }  
+            else if (window.ActiveXObject) { // IE浏览器  
+                try {  
+                    XMLHttpReq = new ActiveXObject("Msxml2.XMLHTTP");  
+                } catch (e) {  
+                    try {  
+                        XMLHttpReq = new ActiveXObject("Microsoft.XMLHTTP");  
+                    } catch (e) {}  
+                }  
+            }  
+        }  
+        //发送请求函数  
+        function sendRequest() {  
+            createXMLHttpRequest();  
+            var url = "ipv6_number_select_ajax.jsp?start="+document.getElementById('from').value+"&end="+document.getElementById('to').value; 
+            XMLHttpReq.open("GET", url, true);  
+            XMLHttpReq.onreadystatechange = processResponse;//指定响应函数  
+            XMLHttpReq.send(null);  // 发送请求  
+        }  
+        // 处理返回信息函数  
+        function processResponse() {  
+            if (XMLHttpReq.readyState == 4) { // 判断对象状态  
+                if (XMLHttpReq.status == 200) { // 信息已经成功返回，开始处理信息  
+                    show(); 
+                } else { //页面不正常  
+                  //  window.alert("您所请求的页面有异常。");  
+                }  
+            }  
+        }  
+        function show() {  
+        	//取出web_ajax.jsp里面画这段是时间top10的饼状图
+            var name = XMLHttpReq.responseXML.getElementsByTagName("select_number"); 
+            var name1 = XMLHttpReq.responseXML.getElementsByTagName("select_date"); 
+          	var name2=name[0].childNodes[0].nodeValue.replace("]","");
+          	name2=name2.replace("[","");
+          	name2=name2.substring(1,name2.length);
+            select_number=name2.split(",");
+          	
+      		var name3=name1[0].childNodes[0].nodeValue.replace("]","");
+          	name3=name3.replace("[","");
+            select_date=name3.split(",");
+            
+        // 基于准备好的dom，初始化echarts实例
+	        //折线图
+	      var myChart1 = echarts.init(document.getElementById('all'));
+	         var option1 = {
+				    title: {
+				        text: '(IPv6)用户在线情况图'
+				    },
+				    tooltip : {
+				        trigger: 'axis',
+				        axisPointer: {
+				            type: 'cross',
+				            label: {
+				                backgroundColor: '#6a7985'
+				            }
+				        }
+				    },
+				    legend: {
+				        data:['用户数量']
+				    },
+				    toolbox: {
+			        show : true,
+			        feature : {
+			            mark : {show: true},
+			            dataView : {show: true, readOnly: false},
+			            magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+			            restore : {show: true},
+			            saveAsImage : {show: true}
+			        	}
+			   		 },
+				    grid: {
+				        left: '3%',
+				        right: '4%',
+				        bottom: '3%',
+				        containLabel: true
+				    },
+				    xAxis : [
+				        {
+				            type : 'category',
+				            boundaryGap : false,
+				            data :select_date
+				        }
+				    ],
+				    yAxis : [
+				        {
+				            type : 'value'
+				        }
+				    ],
+				    series : [
+				        {
+				            name:'用户数量',
+				            type:'line',
+				            stack: '总量',
+				            areaStyle: {normal: {}},
+				            data:select_number
+				        },
+				       
+				    ]
+				};
+			myChart1.setOption(option1);
+        }  
+  </script>
+  </head>
+  
+  <body>
+      	<div class="overview-gap"></div>
+      	<div id="user_use">
+      		<iframe src="ipv6_count.jsp" width=100% height=100% scrolling="no" frameborder="0"> </iframe>
+      	</div>
+        <div class="overview-gap"></div>
+        <div id="select">
+					<label for="from">开始时间:</label>
+					<input type="text" id="from" name="from">
+					<font color="red" size="2">(必选*)</font>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<label for="to">结束时间:</label>
+					<input type="text" id="to" name="to">
+					<font color="red" size="2">(必选*)</font>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					&nbsp;&nbsp;&nbsp;&nbsp;
+			    	 <input type="submit" name="select" value="查询" onClick="sendRequest()" >
+	    </div>
+	    <div class="overview-gap"></div>
+	    <div id="all">
+	    		<iframe src="ipv6_number_line.jsp" width=100% height=100% scrolling="no" frameborder="0"> </iframe>
+	    </div>
+  </body>
+</html>

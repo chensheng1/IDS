@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>protocol_total.html</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+      <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+	  <script src="//code.jquery.com/jquery-1.9.1.js"></script>
+	  <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+	  <link rel="stylesheet" href="http://jqueryui.com/resources/demos/style.css">
+	  
+	  <script src="../../js/echarts.min.js"></script>
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+
+  <style type="text/css">
+	#all{
+		width:100%;
+		height:500px;
+	}
+	.overview-gap{
+		clear: both;
+		background-color: #ececec;
+		height: 18px;
+	}
+	#top10{
+		width: 50%;
+		height:500px;
+		display:inline;
+		float:left;
+		border:1px  groove;
+	}
+	#select{
+		width:100%;
+		height:30px;
+		position: relative;
+		padding-top: 20px;
+		padding-bottom: 15px;
+		z-index: 2;
+		color: #323437;
+	}
+	#day{
+		width: 49%;
+		height:500px;
+		display:inline;
+		float:left;
+		top:30px;
+		border:1px  groove;
+	}
+	#some{
+		width:100%;
+		height:500px;
+	}
+	#select_table{
+		width: 40%;
+		height:450px;
+		display:inline;
+		float:left;
+		top:50px;
+	}
+	#select_line{
+		width: 90%;
+		height:450px;
+		display:inline;
+		float:left;
+		top:30px;
+	}
+	</style>
+	
+<script>
+  $(function() {
+    $( "#from" ).datepicker({
+      dateFormat:"yy-mm-dd",
+      changeMonth: true,
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#to" ).datepicker( "option", "minDate", selectedDate );
+      }
+    });
+    
+    $( "#to" ).datepicker({
+      dateFormat:"yy-mm-dd",
+      changeMonth: true,
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#from" ).datepicker( "option", "maxDate", selectedDate );
+       
+      }
+    });
+  });
+  </script>
+  
+  
+  <!-- 绘制的是查询时间段的top10饼状图 -->
+ <script language="javascript">
+  var firsttime=document.getElementById('from').value; 
+  var lasttime=document.getElementById('to').value;
+  var index =  document.getElementById('pro').selectedIndex;
+    var XMLHttpReq;
+    var select;
+    var pro_name;
+    var pro_value;
+    var select_date;
+    var select_out;
+    var select_in;
+        //创建XMLHttpRequest对象         
+        function createXMLHttpRequest() {  
+            if(window.XMLHttpRequest) { //Mozilla 浏览器  
+                XMLHttpReq = new XMLHttpRequest();  
+            }  
+            else if (window.ActiveXObject) { // IE浏览器  
+                try {  
+                    XMLHttpReq = new ActiveXObject("Msxml2.XMLHTTP");  
+                } catch (e) {  
+                    try {  
+                        XMLHttpReq = new ActiveXObject("Microsoft.XMLHTTP");  
+                    } catch (e) {}  
+                }  
+            }  
+        }  
+        //发送请求函数  
+        function sendRequest() {  
+            createXMLHttpRequest();  
+            var url = "protocol_select_ajax.jsp?start="+document.getElementById('from').value+"&end="+document.getElementById('to').value+"&pro="+document.getElementById('pro').value; 
+            //var url = "origin_select.jsp";
+            XMLHttpReq.open("GET", url, true);  
+            XMLHttpReq.onreadystatechange = processResponse;//指定响应函数  
+            XMLHttpReq.send(null);  // 发送请求  
+        }  
+        // 处理返回信息函数  
+        function processResponse() {  
+            if (XMLHttpReq.readyState == 4) { // 判断对象状态  
+                if (XMLHttpReq.status == 200) { // 信息已经成功返回，开始处理信息  
+                    show(); 
+                } else { //页面不正常  
+                    //window.alert("您所请求的页面有异常。");  
+                }  
+            }  
+        }  
+        function show() {  
+        	//取出protocol_select_ajax.jsp里面画这段是时间top10的饼状图
+            var name = XMLHttpReq.responseXML.getElementsByTagName("select_name"); 
+            var name1 = XMLHttpReq.responseXML.getElementsByTagName("select_value"); 
+          	var name2=name[0].childNodes[0].nodeValue.replace("]","");
+          	name2=name2.replace("[","");
+          	name2=name2.substring(1,name2.length);
+            pro_name=name2.split(",");
+          	
+      		var name3=name1[0].childNodes[0].nodeValue.replace("]","");
+          	name3=name3.replace("[","");
+            pro_value=name3.split(",");
+            
+            //取出protocol_select_ajax.jsp里面画这段是时间的一个协议的折线图(时间，上下行流量)
+          	var date = XMLHttpReq.responseXML.getElementsByTagName("select_date"); 
+          	var date2=date[0].childNodes[0].nodeValue.replace("]","");
+          	date2=date2.replace("[","");
+          	date2=date2.substring(1,date2.length-3);
+            select_date=date2.split(".0,");
+            
+             
+            var out = XMLHttpReq.responseXML.getElementsByTagName("select_out");
+            var out2=out[0].childNodes[0].nodeValue.replace("]","");
+          	out2=out2.replace("[","");
+            select_out=out2.split(",");
+            
+            var incoming = XMLHttpReq.responseXML.getElementsByTagName("select_in");
+            var incoming2=incoming[0].childNodes[0].nodeValue.replace("]","");
+          	incoming2=incoming2.replace("[","");
+            select_in=incoming2.split(",");
+        // 基于准备好的dom，初始化echarts实例
+             var myChart = echarts.init(document.getElementById('top10'));
+		
+		        // 指定图表的配置项和数据
+		       var option = {
+				    title : {
+				        text: '本段时间的top10协议分布',
+				        x:'40%',
+				    },
+				    tooltip : {
+				        trigger: 'item',
+				        formatter: "{a} <br/>{b} : {c} ({d}%)"
+				    },
+				    legend: {
+				    	top:60,
+				        orient : 'vertical',
+				        x : 'left',
+				        data:pro_name
+				    },
+				    toolbox: {
+				        show : true,
+				        feature : {
+				            mark : {show: true},
+				            dataView : {show: true, readOnly: false},
+				            magicType : {
+				                show: true, 
+				                type: ['pie', 'funnel'],
+				                
+				            },
+				            restore : {show: true},
+				            saveAsImage : {show: true}
+				        }
+				    },
+				    calculable : true,
+				    series : [
+				        {
+				            name:'Top10 协议统计',
+				            type:'pie',
+				            radius : '70%',
+				            center: ['60%', '50%'],
+				            data:[{value:pro_value[0],name:pro_name[0]},
+				            	  {value:pro_value[1],name:pro_name[1]},
+				            	  {value:pro_value[2],name:pro_name[2]},
+				            	  {value:pro_value[3],name:pro_name[3]},
+				            	  {value:pro_value[4],name:pro_name[4]},
+				            	  {value:pro_value[5],name:pro_name[5]},
+				            	  {value:pro_value[6],name:pro_name[6]},
+				            	  {value:pro_value[7],name:pro_name[7]},
+				            	  {value:pro_value[8],name:pro_name[8]},
+				            	  {value:pro_value[9],name:pro_name[9]},
+				            	  {value:pro_value[10],name:pro_name[10]},
+				            ],
+				            itemStyle: {
+				                emphasis: {
+				                    shadowBlur: 10,
+				                    shadowOffsetX: 0,
+				                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+				                }
+				            }
+				        }
+				    ]
+				};
+	        myChart.setOption(option);
+	        //折线图
+	      var myChart1 = echarts.init(document.getElementById('select_line'));
+	        var option1 = {
+					    tooltip : {
+					        trigger: 'axis',
+					    },
+					    legend: {
+					        data:['上行流量(kb)','下行流量(kb)']
+					    },
+					    toolbox: {
+					        show : true,
+					        feature : {
+					            mark : {show: true},
+					            dataView : {show: true, readOnly: false},
+					            magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+					            restore : {show: true},
+					            saveAsImage : {show: true}
+					        }
+					    },
+					    calculable : true,
+					    xAxis : [
+					        {
+					            type : 'category',
+					            boundaryGap : false,
+					            data : select_date
+					        }
+					    ],
+					    yAxis : [
+					        {
+					        	
+					            type : 'value',
+					        }
+					    ],
+					    series : [
+					        {
+					            name:'上行流量(kb)',
+					            type:'line',
+					            stack: '总量',
+					            itemStyle: {normal: {areaStyle: {type: 'default'}}},
+					            data:select_out,
+					        },
+					        {
+					            name:'下行流量(kb)',
+					            type:'line',
+					            stack: '总量',
+					            itemStyle: {normal: {areaStyle: {type: 'default'}}},
+					            data:select_in,
+					        },
+					    ]
+					};
+					myChart1.setOption(option1);
+		
+/* 		var select_table = XMLHttpReq.responseText;
+		cs_index=select_table.indexOf("<cs>", 0);
+		cs_index2=select_table.indexOf("</cs>", 0);
+		select_table=select_table.substring(cs_index, cs_index2);
+        document.getElementById("select_table").innerHTML=select_table; */
+        }  
+  </script>
+  
+  </head>
+  
+  <body>
+    <div id="total">
+        <div class="overview-gap"></div>
+        <div id="select">
+					<label for="from">开始时间:</label>
+					<input type="text" id="from" name="from" style="width:12%;height:15px;">
+					<font color="red" size="2">(必选*)</font>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<label for="to">结束时间:</label>
+					<input type="text" id="to" name="to" style="width:12%;height:15px;">
+					<font color="red" size="2">(必选*)</font>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+				    &nbsp;&nbsp;&nbsp;&nbsp;
+				    &nbsp;&nbsp;&nbsp;&nbsp;
+				   <span >选择查询协议：</span>
+			       <select  name="pro"  id="pro" style="width:8%;height:25px;">
+			    		   <option value="协议">协议</option>
+						   <option value="http">http</option>
+						   <option value="smtp">smtp</option>
+						   <option value="mysql">mysql</option>
+						   <option value="teredo">teredo</option>
+						   <option value="bittorrent">bittorrent</option>
+						   <option value="dhcp">dhcp</option>
+						   <option value="dns">dns</option>
+						   <option value="ssh">ssh</option>
+						   <option value="ssl">ssl</option>
+			    	 </select>
+			    	  &nbsp;&nbsp;&nbsp;&nbsp;
+				    &nbsp;&nbsp;&nbsp;&nbsp;
+			    	 <input type="submit" name="select" value="查询" onClick="sendRequest()" >
+	    </div>
+	    <div class="overview-gap"></div>
+	    <div id="all">
+		        <div id="top10">
+		            <iframe src="protocol_pie.jsp" width=100% height=100% scrolling="no" frameborder="0"> </iframe>
+		        </div>
+		        <div id="day">
+		            <iframe src="protocol_day_table.jsp" width=100% height=100% scrolling="no" frameborder="0"> </iframe>
+		        </div>
+        </div>
+        <div class="overview-gap"></div>
+        <div id="some">
+		        <div id="select_line"></div>
+		        <!-- <div id="select_table" align="center"></div> -->
+        </div>
+    </div>
+  </body>
+</html>

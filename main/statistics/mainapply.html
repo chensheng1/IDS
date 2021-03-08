@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>main</title>
+    
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+      <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+    <style type="text/css">
+	#all{
+		width:100%;
+		height:1000px;
+	}
+	
+	#main{
+		width: 100%;
+		height:800px;
+		display:inline;
+		float:left;
+		border:1px  groove;
+	}
+	#pro{
+		width: 100%;
+		height:150px;
+		display:inline;
+		float:left;
+		border:1px  groove;
+	}
+	</style>
+	
+
+  </head>
+    <body>
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="all">
+    	 <div id="pro">
+	    <table width="100%" height="150px" border="1" align="center" style="font-family: verdana,arial,sans-serif;font-size:11px;color:#333333;border-width: 1px;border-color: #666666;border-collapse: collapse;">
+		<tr>
+			<th scope="col" colspan="14" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #dedede;text-align:center;font-size:20px;">应用协议</th>
+		</tr>
+        <tr>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">dhcp</td>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">ssl</td>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">dns</td>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">http</td>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">teredo</td>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">bittorrent</td>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">mysql</td>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">smtp</td>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">ssh</td>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">xmpp</td>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">ftp</td>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">irc</td>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">dtls</td>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">imap</td>
+     	</tr>
+     	        <tr>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">pop3</td>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">sip</td>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">modbus</td>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">emule</td>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">icq</td>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">msn</td>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">sina</td>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">wect</td>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">dce_rpc</td>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">gnutella1</td>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">radius</td>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">krb</td>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">thunder</td>
+             <td width="50px" height="50px" style="border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align:center;font-size:15px;">rdp</td>
+     	</tr>
+		</table>
+	    </div>
+	    <div id="main"> 
+	    <iframe src="apply.jsp" width=100% height=100% scrolling="no" frameborder="0"> </iframe>
+	    </div>
+	   
+</div>
+</body>
+</html>

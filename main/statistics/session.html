@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>session</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+	<script src="../../js/echarts.min.js"></script>
+	<style type="text/css">
+		#center{
+			width:100%;
+			height:500px
+		}
+	</style>
+	<script type="text/javascript">
+    	var XMLHttpReq;  
+        //创建XMLHttpRequest对象         
+        function createXMLHttpRequest() {  
+            if(window.XMLHttpRequest) { //Mozilla 浏览器  
+                XMLHttpReq = new XMLHttpRequest();  
+            }  
+            else if (window.ActiveXObject) { // IE浏览器  
+                try {  
+                    XMLHttpReq = new ActiveXObject("Msxml2.XMLHTTP");  
+                } catch (e) {  
+                    try {  
+                        XMLHttpReq = new ActiveXObject("Microsoft.XMLHTTP");  
+                    } catch (e) {}  
+                }  
+            }  
+        }  
+        //发送请求函数  
+        function sendRequest() {  
+            createXMLHttpRequest();  
+            var url = "session_ajax.jsp";  
+            XMLHttpReq.open("GET", url, true);  
+            XMLHttpReq.onreadystatechange = processResponse;//指定响应函数  
+            XMLHttpReq.send(null);  // 发送请求  
+        }  
+        // 处理返回信息函数  
+        function processResponse() {  
+            if (XMLHttpReq.readyState == 4) { // 判断对象状态  
+                if (XMLHttpReq.status == 200) { // 信息已经成功返回，开始处理信息  
+                    DisplayHot();  
+                } else { //页面不正常  
+                    //window.alert("您所请求的页面有异常。");  
+                }  
+            }  
+        }  
+        function DisplayHot() {  
+        	var name = XMLHttpReq.responseXML.getElementsByTagName("session_IP"); 
+            var name1 = XMLHttpReq.responseXML.getElementsByTagName("session_orig"); 
+          	var name2=name[0].childNodes[0].nodeValue.replace("]","");
+          	name2=name2.replace("[","");
+          	var IP=name2.split(",");
+          	
+          	
+      		var name3=name1[0].childNodes[0].nodeValue.replace("]","");
+          	name3=name3.replace("[","");
+          	var session_orig=name3.split(",");
+          	
+          	 var date = XMLHttpReq.responseXML.getElementsByTagName("session_resp"); 
+          	 var date2=date[0].childNodes[0].nodeValue.replace("]","");
+          			date2=date2.replace("[","");
+              var session_resp=date2.split(",");
+              
+              var val = XMLHttpReq.responseXML.getElementsByTagName("session_value"); 
+          	 var val2=val[0].childNodes[0].nodeValue.replace("]","");
+          			val2=val2.replace("[","");
+              var session_value=val2.split(",");
+            
+		var myChart = echarts.init(document.getElementById('center'));
+
+		var	option = {
+				    title : {
+				        text: 'Session Traffic Top10',
+				    },
+				    tooltip : {
+				        trigger: 'axis'
+				    },
+				    legend: {
+				        data:['sum','resp','orign']
+				    },
+				    toolbox: {
+				        show : true,
+				        feature : {
+				            mark : {show: true},
+				            dataView : {show: true, readOnly: false},
+				            magicType : {show: true, type: ['line', 'bar']},
+				            restore : {show: true},
+				            saveAsImage : {show: true}
+				        }
+				    },
+				    calculable : true,
+				    grid:{
+				    	y2:140
+				    },
+				    xAxis : [
+				        {
+				            type : 'category',
+				            data : IP,
+				            axisLabel: {
+							            interval: 0,
+							            rotate: -30
+							        },
+							        splitLine: {
+							            show: true
+							        }
+				        }
+				    ],
+				    yAxis : [
+				        {
+				        	name:'单位:(M)',
+				            type : 'value'
+				        }
+				    ],
+				    series : [
+				         {
+				            name:'sum',
+				            type:'bar',
+				            data:session_value,
+				        },
+				        {
+				            name:'resp',
+				            type:'bar',
+				            data:session_resp,
+				        	},
+				        {
+				            name:'orign',
+				            type:'bar',
+				            data:session_orig,
+				            }
+				    ]
+				};
+                    
+	        myChart.setOption(option);
+	        }
+    </script>
+	
+  </head>
+  
+  <body onload =sendRequest()>
+    <div id="center"></div>
+  </body>
+</html>

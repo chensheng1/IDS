@@ -1,0 +1,296 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>origin</title>
+	<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+      <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+	  <script src="//code.jquery.com/jquery-1.9.1.js"></script>
+	  <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+	  <link rel="stylesheet" href="http://jqueryui.com/resources/demos/style.css">
+	  
+	  <script src="../../js/echarts.min.js"></script>
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+    <style type="text/css">
+	#all{
+		width:100%;
+		height:500px;
+	}
+	#orign{
+		width: 100%;
+		height:400px;
+		display:inline;
+		float:left;
+		border:1px  groove;
+	}
+	
+	.overview-gap{
+		clear: both;
+		background-color: #ececec;
+		height: 18px;
+	}
+	#select{
+		width:100%;
+		height:30px;
+		position: relative;
+		padding-top: 20px;
+		padding-bottom: 15px;
+		z-index: 2;
+		color: #323437;
+	}
+	#center{
+		width: 49%;
+		height:400px;
+		display:inline;
+		float:left;
+		border:1px  groove;
+	}
+	#orig_select{
+		width: 49%;
+		height:400px;
+		display:inline;
+		float:left;
+		border:1px  groove;
+	}
+	</style>
+	
+	<script>
+  $(function() {
+    $( "#from" ).datepicker({
+      dateFormat:"yy-mm-dd",
+      changeMonth: true,
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#to" ).datepicker( "option", "minDate", selectedDate );
+      }
+    });
+    
+    $( "#to" ).datepicker({
+      dateFormat:"yy-mm-dd",
+      changeMonth: true,
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#from" ).datepicker( "option", "maxDate", selectedDate );
+       
+      }
+    });
+  });
+  </script>
+  
+  <script language="javascript">
+    var XMLHttpReq;
+    var select;
+    var ori_ip;
+    var ori_values;
+        //创建XMLHttpRequest对象         
+        function createXMLHttpRequest() {  
+            if(window.XMLHttpRequest) { //Mozilla 浏览器  
+                XMLHttpReq = new XMLHttpRequest();  
+            }  
+            else if (window.ActiveXObject) { // IE浏览器  
+                try {  
+                    XMLHttpReq = new ActiveXObject("Msxml2.XMLHTTP");  
+                } catch (e) {  
+                    try {  
+                        XMLHttpReq = new ActiveXObject("Microsoft.XMLHTTP");  
+                    } catch (e) {}  
+                }  
+            }  
+        }  
+        //发送请求函数  
+        function sendRequest() {  
+            createXMLHttpRequest();  
+            var url = "origin_ip_select_ajax.jsp?start="+document.getElementById('from').value+"&end="+document.getElementById('to').value+"&ip="+document.getElementById('ip').value; 
+            XMLHttpReq.open("GET", url, true);  
+            XMLHttpReq.onreadystatechange = processResponse;//指定响应函数  
+            XMLHttpReq.send(null);  // 发送请求  
+        }  
+        // 处理返回信息函数  
+        function processResponse() {  
+            if (XMLHttpReq.readyState == 4) { // 判断对象状态  
+                if (XMLHttpReq.status == 200) { // 信息已经成功返回，开始处理信息  
+                    show(); 
+                } else { //页面不正常  
+                    //window.alert("您所请求的页面有异常。");  
+                }  
+            }  
+        }  
+        function show() {  
+        	//取得查询的表格  
+            //var select1 = XMLHttpReq.responseText;
+            var name = XMLHttpReq.responseXML.getElementsByTagName("select_origin1"); 
+            var name1 = XMLHttpReq.responseXML.getElementsByTagName("select_value1"); 
+          	var name2=name[0].childNodes[0].nodeValue.replace("]","");
+          	name2=name2.replace("[","");
+          	name2=name2.substring(1,name2.length);
+            ori_ip=name2.split(",");
+          	
+          	
+      		var name3=name1[0].childNodes[0].nodeValue.replace("]","");
+          	name3=name3.replace("[","");
+           ori_values=name3.split(",");
+          	
+          	
+          	var conn1 = XMLHttpReq.responseXML.getElementsByTagName("select_origin");  
+            var conn2=conn1[0].childNodes[0].nodeValue.replace("]","");
+          		conn2=conn2.replace("[","");
+          		conn2=conn2.substring(1,conn2.length);
+          	var origin=conn2.split(",");
+          	
+          	var traff1 = XMLHttpReq.responseXML.getElementsByTagName("select_value");  
+            var traff2=traff1[0].childNodes[0].nodeValue.replace("]","");
+          		traff2=traff2.replace("[","");
+          	var result=traff2.split(",");
+         //当要把原来的位子覆盖时，将orig_select改为center。
+          	var myChart = echarts.init(document.getElementById('orig_select'));
+		
+		        // 指定图表的配置项和数据
+		      var option = {
+				    title : {
+				        text: '源IP流量时间段分布',
+				    },
+				    tooltip : {
+				        trigger: 'item',
+				        formatter: "{a} <br/>{b} : {c} ({d}%)"
+				    },
+				    legend: {
+				    	top:60,
+				        orient : 'vertical',
+				        x : 'left',
+				        data:ori_ip
+				    },
+				    toolbox: {
+				        show : true,
+				        feature : {
+				            mark : {show: true},
+				            dataView : {show: true, readOnly: false},
+				            magicType : {
+				                show: true, 
+				                type: ['pie', 'funnel'],
+				                
+				            },
+				            restore : {show: true},
+				            saveAsImage : {show: true}
+				        }
+				    },
+				    calculable : true,
+				    series : [
+				        {
+				            name:'源IP流量统计',
+				            type:'pie',
+				            radius : '70%',
+				            center: ['60%', '50%'],
+				            data:[{value:ori_values[0],name:ori_ip[0]},
+				            	  {value:ori_values[1],name:ori_ip[1]},
+				            	  {value:ori_values[2],name:ori_ip[2]},
+				            	  {value:ori_values[3],name:ori_ip[3]},
+				            	  {value:ori_values[4],name:ori_ip[4]},
+				            	  {value:ori_values[5],name:ori_ip[5]},
+				            	  {value:ori_values[6],name:ori_ip[6]},
+				            	  {value:ori_values[7],name:ori_ip[7]},
+				            	  {value:ori_values[8],name:ori_ip[8]},
+				            	  {value:ori_values[9],name:ori_ip[9]},
+				            	  {value:ori_values[10],name:ori_ip[10]},
+				            ],
+				            itemStyle: {
+				                emphasis: {
+				                    shadowBlur: 10,
+				                    shadowOffsetX: 0,
+				                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+				                }
+				            }
+				        }
+				    ]
+				};
+	       myChart.setOption(option);
+        //document.getElementById("center").innerText=myChart.setOption(option);
+        
+        var myChart1 = echarts.init(document.getElementById('orign'));
+	        var option1 = {
+		        		title: {
+				        text: '源IP流量(每天)'
+				   	 },
+					    tooltip : {
+					        trigger: 'axis',
+					    },
+					    legend: {
+					        data:['源IP(单位：字节)']
+					    },
+					    toolbox: {
+					        show : true,
+					        feature : {
+					            mark : {show: true},
+					            dataView : {show: true, readOnly: false},
+					            magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+					            restore : {show: true},
+					            saveAsImage : {show: true}
+					        }
+					    },
+					    calculable : true,
+					    xAxis : [
+					        {
+					            type : 'category',
+					            boundaryGap : false,
+					            data : origin
+					        }
+					    ],
+					    yAxis : [
+					        {
+					        	
+					            type : 'value',
+					        }
+					    ],
+					    series : [
+					        {
+					            name:'源IP(单位：字节)',
+					            type:'line',
+					            stack: '总量',
+					            itemStyle: {normal: {areaStyle:{
+					            								type: 'default',
+					            								color:'#0080FF',
+					            								}
+					            							}},
+					            data: result,
+					        },
+					    ]
+					};
+					myChart1.setOption(option1);
+        
+  	}
+  </script>
+  </head>
+    <body>
+    <div id="all">
+      	<div class="overview-gap"></div>
+	       <div id="select">
+	                &nbsp;&nbsp;&nbsp;&nbsp;
+					<label for="from">开始时间:</label>
+					<input type="text" id="from" name="from">
+					<font color="red" size="2">(必选*)</font>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<label for="to">结束时间:</label>
+					<input type="text" id="to" name="to">
+					<font color="red" size="2">(必选*)</font>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<label for="to">源IP:</label>
+					<input type="text" id="ip" name="ip">
+					&nbsp;&nbsp;&nbsp;&nbsp;
+				    <input type="submit" name="select" value="查询" onClick="sendRequest()" >
+			
+	    </div>
+	    <div class="overview-gap"></div>
+	    <div id="center">
+	       <iframe src="OriginIP_sum.jsp"width=100% height=100% scrolling="no" frameborder="0"></iframe>
+	    </div>
+	    <div id="orig_select">
+	       <iframe src="originip_current.jsp"width=100% height=100% scrolling="no" frameborder="0"></iframe>
+	    </div>
+	    <div class="overview-gap"></div>
+	    <div id="orign">
+	           <iframe src="origin_ip_line.jsp"width=100% height=100% scrolling="no" frameborder="0"></iframe>     
+	    </div>
+    </div>
+
+  </body>
+</html>

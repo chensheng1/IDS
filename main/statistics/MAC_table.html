@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>user_barandline.html</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+     <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+	  <script src="//code.jquery.com/jquery-1.9.1.js"></script>
+	  <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+	  <link rel="stylesheet" href="http://jqueryui.com/resources/demos/style.css">
+	  
+      <script src="../../js/echarts.min.js"></script>
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+
+
+ <style type="text/css">
+	.overview-gap{
+		clear: both;
+		background-color: #ececec;
+		height: 18px;
+	}
+	#select{
+		width:100%;
+		height:30px;
+		position: relative;
+		padding-top: 20px;
+		padding-bottom: 15px;
+		z-index: 2;
+		color: #323437;
+	}
+	#table{
+		width:100%;
+		height:600px;
+	}
+	</style>
+
+<script language="javascript">
+    var XMLHttpReq;  
+        //创建XMLHttpRequest对象         
+        function createXMLHttpRequest() {  
+            if(window.XMLHttpRequest) { //Mozilla 浏览器  
+                XMLHttpReq = new XMLHttpRequest();  
+            }  
+            else if (window.ActiveXObject) { // IE浏览器  
+                try {  
+                    XMLHttpReq = new ActiveXObject("Msxml2.XMLHTTP");  
+                } catch (e) {  
+                    try {  
+                        XMLHttpReq = new ActiveXObject("Microsoft.XMLHTTP");  
+                    } catch (e) {}  
+                }  
+            }  
+        }  
+        //发送请求函数  
+        function sendRequest() {  
+            createXMLHttpRequest();  
+            var url = "MAC_select_ajax.jsp?ip="+document.getElementById('user').value; 
+            XMLHttpReq.open("GET", url, true);  
+            XMLHttpReq.onreadystatechange = processResponse;//指定响应函数  
+            XMLHttpReq.send(null);  // 发送请求  
+        }  
+        // 处理返回信息函数  
+        function processResponse() {  
+            if (XMLHttpReq.readyState == 4) { // 判断对象状态  
+                if (XMLHttpReq.status == 200) { // 信息已经成功返回，开始处理信息  
+                    DisplayHot();  
+                    setTimeout("sendRequest()", 10000);  
+                } else { //页面不正常  
+                    //window.alert("您所请求的页面有异常。");  
+                }  
+            }  
+        }  
+        function DisplayHot() {  
+            //读取Main_ajax.jsp里面的连接数的值
+            var select_table = XMLHttpReq.responseText;
+		cs_index=select_table.indexOf("<cs>", 0);
+		cs_index2=select_table.indexOf("</cs>", 0);
+		select_table=select_table.substring(cs_index, cs_index2);
+        document.getElementById("table").innerHTML=select_table;
+        }
+  </script>
+  </head>
+  
+  <body>
+  <div class="overview-gap"></div>
+  <div id="select">
+					<span>用户IP：</span>
+        			<input type="text" id="user" name="user" style="width:300px;height:30px;" style="width:15%;height:15px;">
+        			&nbsp;&nbsp;&nbsp;&nbsp;
+					&nbsp;&nbsp;&nbsp;&nbsp;
+			    	<input type="submit" name="select" value="查询" onClick="sendRequest()" >
+	</div>
+	<div class="overview-gap"></div>
+    <div id="table">
+    	<iframe src="MAC_table.jsp" width=100% height=100% scrolling="no" frameborder="0"> </iframe>
+    </div>
+  </body>
+</html>
